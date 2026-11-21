@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IDIOMAR — Brand Identity Sheet</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .swatch-hover {
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+    }
+    .swatch-hover:hover {
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body class="bg-[#E9E3DF] text-[#000000] p-6 md:p-10 min-h-screen selection:bg-[#FF7A30] selection:text-white">
+
+  <!-- Main Container -->
+  <div class="max-w-6xl mx-auto space-y-8">
+    
+    <!-- Top Header Bar -->
+    <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-black/10">
+      <div>
+        <div class="inline-block px-2.5 py-0.5 rounded border border-black/30 bg-white text-[11px] font-bold uppercase tracking-wider mb-1">
+          Brand Identity System
+        </div>
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-black">IDIOMAR (idiom.ar)</h1>
+      </div>
+      <div class="text-xs text-black/60 font-medium">
+        CRM para Tutores de Idiomas Independientes
+      </div>
+    </header>
+
+    <!-- SECTION 1: LOGO -->
+    <section class="space-y-3">
+      <!-- Section Tag Pill -->
+      <div class="inline-block px-3 py-0.5 bg-white border border-black rounded-md text-xs font-bold tracking-wide">
+        Logo
+      </div>
+
+      <!-- Logo Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+        
+        <!-- Primary Wordmark + Icon Lockup -->
+        <div class="md:col-span-8 bg-white rounded-2xl p-8 md:p-10 shadow-sm border border-black/5 flex flex-col justify-between min-h-[220px]">
+          <div class="flex items-center gap-6 my-auto">
+            <!-- Wordmark -->
+            <div class="flex items-baseline">
+              <span class="text-5xl md:text-6xl font-extrabold tracking-tight text-black">idiomar</span>
+              <span class="text-2xl md:text-3xl font-bold text-[#FF7A30] ml-1">.ar</span>
+            </div>
+            
+            <!-- Logo Icon (Embedded SVG) -->
+            <div class="w-16 h-16 md:w-20 md:h-20 shrink-0">
+              <svg viewBox="0 0 100 100" class="w-full h-full" fill="none">
+                <g stroke-linejoin="round" stroke-linecap="round">
+                  <!-- Top Diamond (Flame #FF7A30) -->
+                  <polygon points="48.5,9 48.5,46.5 29,28.5" fill="#FF7A30" stroke="#FF7A30" stroke-width="1" transform="translate(-0.6 -0.6)" />
+                  <polygon points="51.5,9 71,28.5 51.5,46.5" fill="#FF7A30" stroke="#FF7A30" stroke-width="1" transform="translate(0.6 -0.6)" />
+                  <!-- Left Diamond (Black) -->
+                  <polygon points="27,30.5 46.5,48.5 9,48.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(-1 -0.6)" />
+                  <polygon points="9,51.5 46.5,51.5 27,69.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(-1 0.6)" />
+                  <!-- Right Diamond (Black) -->
+                  <polygon points="73,30.5 91,48.5 53.5,48.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(1 -0.6)" />
+                  <polygon points="53.5,51.5 91,51.5 73,69.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(1 0.6)" />
+                  <!-- Bottom Diamond (Black) -->
+                  <polygon points="29,71.5 48.5,53.5 48.5,91" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(-0.6 1)" />
+                  <polygon points="51.5,53.5 71,71.5 51.5,91" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(0.6 1)" />
+                </g>
+              </svg>
+            </div>
+          </div>
+          <div class="text-xs font-semibold text-black/40 uppercase tracking-widest mt-4">
+            Primary Lockup (Wordmark + Compass Emblem)
+          </div>
+        </div>
+
+        <!-- Standalone Mark Card -->
+        <div class="md:col-span-4 bg-white rounded-2xl p-8 shadow-sm border border-black/5 flex flex-col justify-between items-center min-h-[220px]">
+          <div class="w-24 h-24 my-auto">
+            <svg viewBox="0 0 100 100" class="w-full h-full" fill="none">
+              <g stroke-linejoin="round" stroke-linecap="round">
+                <!-- Top Diamond (Flame #FF7A30) -->
+                <polygon points="48.5,9 48.5,46.5 29,28.5" fill="#FF7A30" stroke="#FF7A30" stroke-width="1" transform="translate(-0.6 -0.6)" />
+                <polygon points="51.5,9 71,28.5 51.5,46.5" fill="#FF7A30" stroke="#FF7A30" stroke-width="1" transform="translate(0.6 -0.6)" />
+                <!-- Left Diamond (Black) -->
+                <polygon points="27,30.5 46.5,48.5 9,48.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(-1 -0.6)" />
+                <polygon points="9,51.5 46.5,51.5 27,69.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(-1 0.6)" />
+                <!-- Right Diamond (Black) -->
+                <polygon points="73,30.5 91,48.5 53.5,48.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(1 -0.6)" />
+                <polygon points="53.5,51.5 91,51.5 73,69.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(1 0.6)" />
+                <!-- Bottom Diamond (Black) -->
+                <polygon points="29,71.5 48.5,53.5 48.5,91" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(-0.6 1)" />
+                <polygon points="51.5,53.5 71,71.5 51.5,91" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(0.6 1)" />
+              </g>
+            </svg>
+          </div>
+          <div class="text-xs font-semibold text-black/40 uppercase tracking-widest mt-2">
+            Symbol / App Icon
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 2: COLOURS & TYPOGRAPHY -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- COLOURS CARD -->
+      <section class="lg:col-span-6 space-y-3">
+        <div class="inline-block px-3 py-0.5 bg-white border border-black rounded-md text-xs font-bold tracking-wide">
+          Colours
+        </div>
+
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-black/5">
+          <div class="grid grid-cols-12 rounded-xl overflow-hidden h-[420px] text-xs">
+            
+            <!-- 1. Valencia Flame (Wide Column: 4 cols) -->
+            <div class="col-span-4 bg-[#FF7A30] p-4 flex flex-col justify-between text-black cursor-pointer swatch-hover group" onclick="copyColor('#FF7A30', 'Valencia Flame')">
+              <div>
+                <span class="font-extrabold text-base leading-tight block">Valencia</span>
+                <span class="font-extrabold text-base leading-tight block">Flame</span>
+              </div>
+              <div class="font-mono-code text-[10px] space-y-1 bg-white/20 backdrop-blur-sm p-2 rounded-lg border border-black/10">
+                <div class="font-semibold text-black">RGB — 255, 122, 48</div>
+                <div class="text-black/80">CMYK — 0, 52, 81, 0</div>
+                <div class="text-black/80">Pantone — 1585 C</div>
+                <div class="font-bold text-black mt-1">Hex — #FF7A30</div>
+                <div class="text-[9px] text-black/60 pt-1 border-t border-black/10 group-hover:text-black">Click to copy</div>
+              </div>
+            </div>
+
+            <!-- 2. Oxford Slate (3 cols) -->
+            <div class="col-span-3 bg-[#465C88] p-4 flex flex-col justify-between text-white cursor-pointer swatch-hover group" onclick="copyColor('#465C88', 'Oxford Slate')">
+              <div>
+                <span class="font-extrabold text-base leading-tight block">Oxford</span>
+                <span class="font-extrabold text-base leading-tight block">Slate</span>
+              </div>
+              <div class="font-mono-code text-[10px] space-y-1 bg-black/25 backdrop-blur-sm p-2 rounded-lg border border-white/10">
+                <div class="font-semibold text-white">RGB — 70, 92, 136</div>
+                <div class="text-white/80">CMYK — 49, 32, 0, 47</div>
+                <div class="text-white/80">Pantone — 534 C</div>
+                <div class="font-bold text-white mt-1">Hex — #465C88</div>
+                <div class="text-[9px] text-white/60 pt-1 border-t border-white/10 group-hover:text-white">Click to copy</div>
+              </div>
+            </div>
+
+            <!-- 3. Parchment Stone (3 cols) -->
+            <div class="col-span-3 bg-[#E9E3DF] p-4 flex flex-col justify-between text-black cursor-pointer swatch-hover group border-l border-black/5" onclick="copyColor('#E9E3DF', 'Parchment Stone')">
+              <div>
+                <span class="font-extrabold text-base leading-tight block">Parchment</span>
+                <span class="font-extrabold text-base leading-tight block">Stone</span>
+              </div>
+              <div class="font-mono-code text-[10px] space-y-1 bg-white/50 backdrop-blur-sm p-2 rounded-lg border border-black/10">
+                <div class="font-semibold text-black">RGB — 233, 227, 223</div>
+                <div class="text-black/80">CMYK — 0, 3, 4, 9</div>
+                <div class="text-black/80">Pantone — Warm Gray 1 C</div>
+                <div class="font-bold text-black mt-1">Hex — #E9E3DF</div>
+                <div class="text-[9px] text-black/60 pt-1 border-t border-black/10 group-hover:text-black">Click to copy</div>
+              </div>
+            </div>
+
+            <!-- 4. Neutrals Column (2 cols) -->
+            <div class="col-span-2 flex flex-col h-full border-l border-black/10">
+              <!-- White -->
+              <div class="h-1/3 bg-white p-2.5 flex flex-col justify-between border-b border-black/10 cursor-pointer hover:bg-neutral-50" onclick="copyColor('#FFFFFF', 'Pure White')">
+                <span class="font-bold text-xs text-black">White</span>
+                <span class="font-mono-code text-[10px] text-black/60 font-medium">#FFFFFF</span>
+              </div>
+              <!-- Slate Tint -->
+              <div class="h-1/3 bg-[#7084A8] p-2.5 flex flex-col justify-between text-white cursor-pointer hover:opacity-95" onclick="copyColor('#7084A8', 'Slate Tint')">
+                <span class="font-bold text-xs">Slate</span>
+                <span class="font-mono-code text-[10px] text-white/80 font-medium">#7084A8</span>
+              </div>
+              <!-- Black -->
+              <div class="h-1/3 bg-[#000000] p-2.5 flex flex-col justify-between text-white cursor-pointer hover:bg-neutral-900" onclick="copyColor('#000000', 'Obsidian Black')">
+                <span class="font-bold text-xs">Black</span>
+                <span class="font-mono-code text-[10px] text-white/80 font-medium">#000000</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- TYPOGRAPHY CARD -->
+      <section class="lg:col-span-6 space-y-3">
+        <div class="inline-block px-3 py-0.5 bg-white border border-black rounded-md text-xs font-bold tracking-wide">
+          Typography
+        </div>
+
+        <div class="bg-white rounded-2xl p-8 shadow-sm border border-black/5 min-h-[452px] flex flex-col justify-between">
+          <div>
+            <!-- Primary Font Title -->
+            <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-black leading-none">
+              Plus Jakarta Sans
+            </h2>
+            
+            <!-- Weights Specifier -->
+            <div class="text-xl md:text-2xl font-bold text-black mt-2 tracking-tight">
+              Regular + Medium + SemiBold + Bold
+            </div>
+
+            <!-- Alphabet Specimen -->
+            <div class="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-black/10 font-bold text-sm md:text-base leading-relaxed tracking-wider text-black">
+              <!-- Uppercase -->
+              <div>
+                ABCDEFGHIJ<br>
+                KLMNOPQR<br>
+                STUVWXYZ
+              </div>
+
+              <!-- Lowercase -->
+              <div>
+                abcdefghijkl<br>
+                mnopqrstuv<br>
+                wxyz
+              </div>
+
+              <!-- Numbers & Glyphs -->
+              <div>
+                0123456789<br>
+                !@£$%&*?,;.:<br>
+                #+—/(){}[]
+              </div>
+            </div>
+          </div>
+
+          <!-- Rationale Note -->
+          <div class="bg-[#E9E3DF]/50 rounded-xl p-3.5 border border-black/5 text-xs text-black/70 flex items-center justify-between mt-6">
+            <div>
+              <strong class="font-bold text-black">Why this font:</strong> Geometric warmth matching EdTech standards; optimal tabular clarity for lesson calendars, financial ledgers, and flashcards.
+            </div>
+            <a href="https://fonts.google.com/specimen/Plus+Jakarta+Sans" target="_blank" class="shrink-0 ml-3 text-[11px] font-bold text-[#FF7A30] hover:underline">
+              Google Fonts &rarr;
+            </a>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Toast Notification for Color Copying -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-black text-white px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold transition-opacity duration-200 opacity-0 pointer-events-none flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-[#FF7A30]"></span>
+      <span id="toast-text">Copied to clipboard</span>
+    </div>
+
+  </div>
+
+  <script>
+    function copyColor(hex, name) {
+      navigator.clipboard.writeText(hex).then(() => {
+        const toast = document.getElementById('toast');
+        const toastText = document.getElementById('toast-text');
+        toastText.textContent = `Copied ${name} (${hex}) to clipboard!`;
+        toast.classList.remove('opacity-0');
+        toast.classList.add('opacity-100');
+        setTimeout(() => {
+          toast.classList.remove('opacity-100');
+          toast.classList.add('opacity-0');
+        }, 2200);
+      });
+    }
+  </script>
+</body>
+</html>
