@@ -17,7 +17,7 @@ flowchart TD
             
             PedagogicMod["Pedagogic Module\n• Glossary deck & Flashcards\n• Vocabulary mastery tracking\n• Homework assignment & review"]:::module
             
-            SchedulingMod["Scheduling Module\n• Booking & Rescheduling\n• Timezone normalization\n• iCal / Calendar feed generator"]:::module
+            SchedulingMod["Scheduling Module\n• Booking & Rescheduling\n• Timezone normalization\n• Google Calendar sync & Meet integration"]:::module
             
             BillingMod["Billing & Analytics Module\n• Payment confirmation handshake\n• Lesson credit ledger calculation\n• Tutor revenue & KPI dashboard"]:::module
         end
@@ -30,7 +30,7 @@ flowchart TD
 
     Database[("PostgreSQL Database\n[Container]")]:::db
     EmailService["Email Service (Resend / SendGrid)\n[External System]"]:::external
-    CalendarApp["Google Calendar / iCal\n[External System]"]:::external
+    GoogleCalendar["Google Calendar API (v3)\n[External System]"]:::external
     GoogleAuth["Google Identity Platform\n[External System]"]:::external
 
     %% Inbound requests
@@ -57,5 +57,5 @@ flowchart TD
 
     %% External outputs
     NotificationMod -->|"HTTPS / REST"| EmailService
-    SchedulingMod -->|"iCal Feed (.ics)"| CalendarApp
+    SchedulingMod -->|"Direct event sync & Meet generation\n[HTTPS / OAuth 2.0]"| GoogleCalendar
     AuthMod -->|"Verifies ID tokens\n[HTTPS / OAuth 2.0]"| GoogleAuth

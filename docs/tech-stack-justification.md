@@ -76,8 +76,8 @@ To honor the project charter's *Exclusiones (Fuera de Alcance V1)* and complete 
 | :--- | :--- | :--- |
 | **Authentication** | **Hybrid Local & Google OAuth 2.0** | Tutors authenticate via local credentials (email/password); students can sign in with either local credentials or Google OAuth (via Google Identity Services). Minimizes onboarding friction for language learners while preserving instructor independence. |
 | **Payments** | **Manual Verification Handshake** (Off-platform PayPal / Wise / Cash) | Eliminates PCI-DSS compliance overhead, banking gateway approval delays, merchant fees, and country-specific KYC requirements. Perfectly models how independent tutors operate in practice. |
-| **Video Calls** | **External Link Storage** (Google Meet / Zoom URL) | Implementing WebRTC or real-time streaming would exhaust more than 100+ hours of the project budget. Storing static room links satisfies 100% of the pedagogical need with zero maintenance burden. |
-| **Calendar Sync** | **iCalendar (`.ics`) Subscription Feed** | Instead of requiring complex Google Calendar write-access OAuth verification, token refresh loops, and privacy audits, the API serves a secure private `.ics` feed URL. Users subscribe once in Apple Calendar, Google Calendar, or Outlook. |
+| **Video Calls** | **Hybrid Generated & Custom URLs** (Google Meet / Zoom URL) | Leverages Google Calendar API to auto-generate native Google Meet rooms on event creation, with fallback support for manual video URLs (Zoom, Skype). Eliminates WebRTC implementation overhead while automating meeting link setup. |
+| **Calendar Sync** | **Google Calendar API (Direct Sync)** | Direct REST integration with Google Calendar API (v3) using tutor OAuth 2.0 authorization. Completely eliminates the severe 8–24 hour polling lag of static iCalendar (.ics) feeds. Enables instant push synchronization for class bookings, rescheduling, cancellations, and native calendar notifications. |
 | **Email Service** | **Transactional API** (Resend / SendGrid) | Asynchronous notifications for scheduling confirmations and payment receipts ensure users never miss critical updates, with sub-100ms dispatch latency. |
 
 ---
@@ -94,8 +94,8 @@ To honor the project charter's *Exclusiones (Fuera de Alcance V1)* and complete 
 │ Database                     │ PostgreSQL (with ORM)        │
 │ Authentication               │ Local (JWT) & Google OAuth   │
 │ Architecture Pattern         │ Modular Monolith / DDD       │
-│ Calendar Integration         │ iCalendar (.ics feed)        │
-│ Video Hosting                │ External (Meet / Zoom URLs)  │
+│ Calendar Integration         │ Google Calendar API (REST v3)│
+│ Video Hosting                │ Meet (Auto) / Custom URL     │
 │ Payment Processing           │ Manual Ledger Verification   │
 │ Target Infrastructure        │ Dockerized PaaS / VPS        │
 └──────────────────────────────┴──────────────────────────────┘

@@ -39,7 +39,7 @@ This document provides the complete data dictionary for the relational database 
 ---
 
 ### 2.2 Table: `tutor_profiles`
-**Description:** Profile extension storing settings, default rate, and off-platform payment instructions for language tutors.
+**Description:** Profile extension storing settings, default rate, off-platform payment instructions, and Google Calendar sync tokens for language tutors.
 
 | Column Name | Data Type | Nullable | Constraints | Default | Description / Business Rules |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -48,6 +48,8 @@ This document provides the complete data dictionary for the relational database 
 | `default_hourly_rate` | `DECIMAL(10,2)` | Yes | `CHECK (default_hourly_rate >= 0)` | `NULL` | Baseline rate used when onboarding new students |
 | `default_currency` | `VARCHAR(3)` | No | ISO 4217 code (e.g. `'USD'`) | `'USD'` | Default billing currency |
 | `payment_instructions`| `TEXT` | Yes | None | `NULL` | Details shown to students (e.g. PayPal email, bank IBAN, payment notes) |
+| `google_refresh_token`| `TEXT` | Yes | None | `NULL` | Encrypted OAuth 2.0 refresh token for Google Calendar API event synchronization |
+| `google_calendar_id`  | `VARCHAR(255)` | Yes | None | `'primary'` | Target Google Calendar ID (defaults to tutor's primary calendar) |
 
 ---
 
@@ -78,7 +80,8 @@ This document provides the complete data dictionary for the relational database 
 | `start_time` | `TIMESTAMPTZ` | No | None | None | Session start timestamp stored in UTC |
 | `duration_minutes` | `INT` | No | `CHECK (duration_minutes IN (30, 45, 60, 90, 120))` | `60` | Class duration in minutes |
 | `status` | `VARCHAR(20)` | No | `CHECK (status IN ('scheduled','completed','cancelled','rescheduled'))` | `'scheduled'` | Current operational status |
-| `meeting_url` | `VARCHAR(500)` | Yes | Valid URL | `NULL` | External video call room (Google Meet, Zoom link) |
+| `meeting_url` | `VARCHAR(500)` | Yes | Valid URL | `NULL` | External video call room (Google Meet generated via Calendar API, or Zoom link) |
+| `google_event_id` | `VARCHAR(255)` | Yes | None | `NULL` | Google Calendar event ID for direct synchronization, updates, and cancellations |
 | `lesson_summary` | `TEXT` | Yes | None | `NULL` | Pedagogical notes and recap logged by tutor after class |
 | `created_at` | `TIMESTAMPTZ` | No | None | `CURRENT_TIMESTAMP` | Audit creation timestamp |
 

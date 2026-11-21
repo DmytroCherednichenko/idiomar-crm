@@ -48,6 +48,8 @@ erDiagram
     TUTOR_PROFILES {
         uuid user_id PK, FK
         text payment_instructions "e.g. PayPal email, bank IBAN, payment notes"
+        text google_refresh_token "nullable, encrypted OAuth token for GCal"
+        string google_calendar_id "defaults to primary"
     }
 
     PAYMENTS {
@@ -72,6 +74,7 @@ erDiagram
         int duration_minutes
         string status "scheduled | completed | cancelled"
         string meeting_url "Google Meet / Zoom external URL"
+        string google_event_id "nullable, Google Calendar event identifier"
         text lesson_summary
     }
 
@@ -118,8 +121,8 @@ flowchart TD
 
     subgraph ExternalServices["External Systems & Channels"]
         GoogleAuth["Google Identity Platform\n[External: Google OAuth 2.0 / OpenID Connect]\nAuthenticates students via Google Sign-In and issues ID tokens"]:::external
+        GoogleCalendar["Google Calendar API\n[External: Google Calendar REST v3]\nDirectly pushes scheduled lessons, syncs updates, and generates Meet rooms"]:::external
         EmailService["Email Service Provider\n[External: Resend / SendGrid / SMTP]\nSends booking confirmations, reminders, and notifications"]:::external
-        CalendarAPI["Calendar Service\n[External: Google Calendar / iCal]\nSyncs scheduled lessons via iCalendar (.ics) feeds"]:::external
         MeetingPlatform["Video Conferencing\n[External: Google Meet / Zoom]\nThird-party video call rooms launched via external URLs"]:::external
         PaymentChannels["Payment Channels\n[External: PayPal / Wise / Banks]\nOff-platform monetary transfers executed directly by users"]:::external
     end
@@ -127,7 +130,7 @@ flowchart TD
     subgraph IDIOMARSystem["System Boundary: IDIOMAR (idiom.ar)"]
         WebApp["Web Application (SPA)\n[Container: Angular / TypeScript]\nDelivers responsive UI for dashboards, glossary decks, calendar scheduling, and payment management"]:::container
 
-        ApiServer["API & Application Server\n[Container: Node.js / NestJS or Express, TypeScript]\nHandles business logic, auth/JWT verification, payment reconciliations, vocabulary search, and iCal generation"]:::container
+        ApiServer["API & Application Server\n[Container: Node.js / NestJS or Express, TypeScript]\nHandles business logic, auth/JWT verification, Google Calendar synchronization, payment reconciliations, and vocabulary search"]:::container
 
         Database[("Relational Database\n[Container: PostgreSQL]\nStores users, profiles, lessons, homework, vocabulary cards, and payment logs")]:::database
     end
@@ -138,8 +141,8 @@ flowchart TD
     WebApp -->|"Makes API requests\n[HTTPS / JSON / REST]"| ApiServer
     ApiServer -->|"Reads and writes domain data\n[TCP / SQL via Prisma or Drizzle ORM]"| Database
     ApiServer -->|"Dispatches transactional emails\n[HTTPS / REST API]"| EmailService
-    ApiServer <-->|"Serves .ics calendar subscription feeds\n[HTTPS / iCal]"| CalendarAPI
-    ApiServer -->|"Verifies Google ID tokens\n[HTTPS / OAuth 2.0]"| GoogleAuth
+    ApiServer -->|"Directly pushes lesson events & Meet links\n[HTTPS / REST API v3]"| GoogleCalendar
+    ApiServer -->|"Verifies Google ID tokens & OAuth tokens\n[HTTPS / OAuth 2.0]"| GoogleAuth
 
     WebApp <-->|"OAuth 2.0 / Google Sign-In flow\n[HTTPS]"| GoogleAuth
     WebApp -.->|"Redirects / opens video room URL\n[HTTPS]"| MeetingPlatform
@@ -172,7 +175,7 @@ flowchart TD
             
             PedagogicMod["Pedagogic Module\n• Glossary deck & Flashcards\n• Vocabulary mastery tracking\n• Homework assignment & review"]:::module
             
-            SchedulingMod["Scheduling Module\n• Booking & Rescheduling\n• Timezone normalization\n• iCal / Calendar feed generator"]:::module
+            SchedulingMod["Scheduling Module\n• Booking & Rescheduling\n• Timezone normalization\n• Google Calendar sync & Meet integration"]:::module
             
             BillingMod["Billing & Analytics Module\n• Payment confirmation handshake\n• Lesson credit ledger calculation\n• Tutor revenue & KPI dashboard"]:::module
         end
@@ -185,7 +188,7 @@ flowchart TD
 
     Database[("PostgreSQL Database\n[Container]")]:::db
     EmailService["Email Service (Resend / SendGrid)\n[External System]"]:::external
-    CalendarApp["Google Calendar / iCal\n[External System]"]:::external
+    GoogleCalendar["Google Calendar API (v3)\n[External System]"]:::external
     GoogleAuth["Google Identity Platform\n[External System]"]:::external
 
     Client -->|"HTTPS / REST API Requests"| ApiGateway
@@ -207,7 +210,7 @@ flowchart TD
     DataAccess -->|"SQL / TCP Connections"| Database
 
     NotificationMod -->|"HTTPS / REST"| EmailService
-    SchedulingMod -->|"iCal Feed (.ics)"| CalendarApp
+    SchedulingMod -->|"Direct event sync & Meet generation\n[HTTPS / OAuth 2.0]"| GoogleCalendar
     AuthMod -->|"Verifies ID tokens\n[HTTPS / OAuth 2.0]"| GoogleAuth
 ```
 
@@ -223,6 +226,7 @@ sequenceDiagram
     participant UI as Angular SPA (Frontend)
     participant API as API Gateway / Router
     participant Sched as Scheduling Module
+    participant GCal as Google Calendar API
     participant Ped as Pedagogic Module
     participant Bill as Billing Module
     participant DB as PostgreSQL Database
@@ -231,14 +235,19 @@ sequenceDiagram
 
     rect rgb(240, 248, 255)
         note over Tutor, Student: PHASE 1: Scheduling a Lesson
-        Tutor->>UI: Selects Student, Date/Time, Duration & Meeting URL
+        Tutor->>UI: Selects Student, Date/Time, Duration & Meeting URL (or auto-generate)
         UI->>API: POST /api/lessons {student_id, start_time, duration, meeting_url}
         API->>Sched: scheduleLesson(dto)
         
         Sched->>DB: Check for schedule conflicts (time overlaps)
         DB-->>Sched: Conflict check OK (no overlaps)
+
+        opt If tutor enabled Google Calendar sync
+            Sched->>GCal: POST /events (sync event, set reminders & auto-create Meet room)
+            GCal-->>Sched: 200 OK {id: google_event_id, hangoutLink: meeting_url}
+        end
         
-        Sched->>DB: INSERT INTO lessons (status = 'scheduled')
+        Sched->>DB: INSERT INTO lessons (status = 'scheduled', meeting_url, google_event_id)
         DB-->>Sched: Lesson record created (id: uuid)
         
         Sched-)Notif: emit LessonScheduledEvent(lessonDetails)

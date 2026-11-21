@@ -4,6 +4,7 @@ sequenceDiagram
     participant UI as Angular SPA (Frontend)
     participant API as API Gateway / Router
     participant Sched as Scheduling Module
+    participant GCal as Google Calendar API
     participant Ped as Pedagogic Module
     participant Bill as Billing Module
     participant DB as PostgreSQL Database
@@ -15,14 +16,19 @@ sequenceDiagram
     %% ==========================================
     rect rgb(240, 248, 255)
         note over Tutor, Student: PHASE 1: Scheduling a Lesson
-        Tutor->>UI: Selects Student, Date/Time, Duration & Meeting URL
+        Tutor->>UI: Selects Student, Date/Time, Duration & Meeting URL (or auto-generate)
         UI->>API: POST /api/lessons {student_id, start_time, duration, meeting_url}
         API->>Sched: scheduleLesson(dto)
         
         Sched->>DB: Check for schedule conflicts (time overlaps)
         DB-->>Sched: Conflict check OK (no overlaps)
+
+        opt If tutor enabled Google Calendar sync
+            Sched->>GCal: POST /events (sync event, set reminders & auto-create Meet room)
+            GCal-->>Sched: 200 OK {id: google_event_id, hangoutLink: meeting_url}
+        end
         
-        Sched->>DB: INSERT INTO lessons (status = 'scheduled')
+        Sched->>DB: INSERT INTO lessons (status = 'scheduled', meeting_url, google_event_id)
         DB-->>Sched: Lesson record created (id: uuid)
         
         Sched-)Notif: emit LessonScheduledEvent(lessonDetails)

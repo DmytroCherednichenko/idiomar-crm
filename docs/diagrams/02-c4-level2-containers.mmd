@@ -13,8 +13,8 @@ flowchart TD
     %% External Systems Out of Scope / Third-party
     subgraph ExternalServices["External Systems & Channels"]
         GoogleAuth["Google Identity Platform\n[External: Google OAuth 2.0 / OpenID Connect]\nAuthenticates students via Google Sign-In and issues ID tokens"]:::external
+        GoogleCalendar["Google Calendar API\n[External: Google Calendar REST v3]\nDirectly pushes scheduled lessons, syncs updates, and generates Meet rooms"]:::external
         EmailService["Email Service Provider\n[External: Resend / SendGrid / SMTP]\nSends booking confirmations, reminders, and notifications"]:::external
-        CalendarAPI["Calendar Service\n[External: Google Calendar / iCal]\nSyncs scheduled lessons via iCalendar (.ics) feeds"]:::external
         MeetingPlatform["Video Conferencing\n[External: Google Meet / Zoom]\nThird-party video call rooms launched via external URLs"]:::external
         PaymentChannels["Payment Channels\n[External: PayPal / Wise / Banks]\nOff-platform monetary transfers executed directly by users"]:::external
     end
@@ -23,7 +23,7 @@ flowchart TD
     subgraph IDIOMARSystem["System Boundary: IDIOMAR (idiom.ar)"]
         WebApp["Web Application (SPA)\n[Container: Angular / TypeScript]\nDelivers responsive UI for dashboards, glossary decks, calendar scheduling, and payment management"]:::container
 
-        ApiServer["API & Application Server\n[Container: Node.js / NestJS or Express, TypeScript]\nHandles business logic, auth/JWT verification, payment reconciliations, vocabulary search, and iCal generation"]:::container
+        ApiServer["API & Application Server\n[Container: Node.js / NestJS or Express, TypeScript]\nHandles business logic, auth/JWT verification, Google Calendar synchronization, payment reconciliations, and vocabulary search"]:::container
 
         Database[("Relational Database\n[Container: PostgreSQL]\nStores users, profiles, lessons, homework, vocabulary cards, and payment logs")]:::database
     end
@@ -40,8 +40,8 @@ flowchart TD
 
     %% Backend to External
     ApiServer -->|"Dispatches transactional emails\n[HTTPS / REST API]"| EmailService
-    ApiServer <-->|"Serves .ics calendar subscription feeds\n[HTTPS / iCal]"| CalendarAPI
-    ApiServer -->|"Verifies Google ID tokens\n[HTTPS / OAuth 2.0]"| GoogleAuth
+    ApiServer -->|"Directly pushes lesson events & Meet links\n[HTTPS / REST API v3]"| GoogleCalendar
+    ApiServer -->|"Verifies Google ID tokens & OAuth tokens\n[HTTPS / OAuth 2.0]"| GoogleAuth
 
     %% External Redirects / Off-platform actions
     WebApp <-->|"OAuth 2.0 / Google Sign-In flow\n[HTTPS]"| GoogleAuth

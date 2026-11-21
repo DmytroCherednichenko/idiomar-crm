@@ -38,6 +38,8 @@ erDiagram
     TUTOR_PROFILES {
         uuid user_id PK, FK
         text payment_instructions "e.g. PayPal email, bank IBAN, payment notes"
+        text google_refresh_token "nullable, encrypted OAuth token for GCal"
+        string google_calendar_id "defaults to primary"
     }
 
     PAYMENTS {
@@ -62,6 +64,7 @@ erDiagram
         int duration_minutes
         string status "scheduled | completed | cancelled"
         string meeting_url "Google Meet / Zoom external URL"
+        string google_event_id "nullable, Google Calendar event identifier"
         text lesson_summary
     }
 
