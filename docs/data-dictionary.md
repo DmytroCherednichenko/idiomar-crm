@@ -10,6 +10,7 @@ This document provides the complete data dictionary for the relational database 
 | :--- | :--- | :--- |
 | `user_role` | `'tutor'`, `'student'` | Role assigned to user for authorization guards |
 | `auth_provider` | `'local'`, `'google'` | Authentication identity provider for user credentials |
+| `student_status` | `'active'`, `'archived'` | Lifecycle state of a student profile (active learner vs. archived) |
 | `cefr_level` | `'A1'`, `'A2'`, `'B1'`, `'B2'`, `'C1'`, `'C2'` | Common European Framework of Reference for Languages |
 | `lesson_status` | `'scheduled'`, `'completed'`, `'cancelled'`, `'rescheduled'` | Lifecycle status of a booked lesson |
 | `homework_status` | `'pending'`, `'submitted'`, `'reviewed'` | Progression status of an assigned homework |
@@ -66,6 +67,7 @@ This document provides the complete data dictionary for the relational database 
 | `default_payment_lessons` | `INT` | No | `CHECK (default_payment_lessons > 0)` | `8` | Default batch size pre-selected on payment renewal modal |
 | `currency` | `VARCHAR(3)` | No | ISO 4217 code | `'USD'` | Billing currency agreed with tutor |
 | `learning_goals` | `TEXT` | Yes | None | `NULL` | Student's motivation, target exams, or notes |
+| `status` | `VARCHAR(20)` | No | `CHECK (status IN ('active', 'archived'))` | `'active'` | Lifecycle state; allows archiving past students to declutter UI while preserving past lessons & payments |
 
 ---
 

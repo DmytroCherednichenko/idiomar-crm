@@ -5,8 +5,9 @@
 **Document Type:** Visual Identity System & Design Specification  
 
 Visual Assets:
-* **Interactive HTML Board:** [branding-sheet.html](file:///Users/dima/Documents/Programming/idiomar-crm/docs/branding-sheet.html)
-* **Vector Graphic (SVG):** [branding-sheet.svg](file:///Users/dima/Documents/Programming/idiomar-crm/docs/branding-sheet.svg)
+* **Interactive HTML Board:** [branding-sheet.html](file:///Users/dima/Documents/Programming/idiomar-crm/docs/design/brand/branding-sheet.html)
+* **Vector Graphic (SVG):** [branding-sheet.svg](file:///Users/dima/Documents/Programming/idiomar-crm/docs/design/brand/branding-sheet.svg)
+* **Source Logo (SVG):** [logo.svg](file:///Users/dima/Documents/Programming/idiomar-crm/docs/design/brand/logo.svg)
 
 ---
 

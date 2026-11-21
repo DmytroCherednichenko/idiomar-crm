@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IDIOMAR — Teacher UI Wireframe (Lessons View)</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body class="bg-[#E9E3DF] text-[#000000] antialiased min-h-screen selection:bg-[#FF7A30] selection:text-white">
+
+  <!-- ============================================================ -->
+  <!-- 1. GLOBAL TEACHER NAVIGATION HEADER                          -->
+  <!-- ============================================================ -->
+  <header class="sticky top-0 z-40 bg-white border-b border-black/10 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Left: Logo & Wordmark (idiom [black] + ar [orange]) -->
+        <div class="flex items-center gap-3 shrink-0">
+          <!-- Logo Emblem SVG -->
+          <div class="w-9 h-9">
+            <svg viewBox="0 0 100 100" class="w-full h-full" fill="none">
+              <g stroke-linejoin="round" stroke-linecap="round">
+                <!-- Top Diamond (Flame #FF7A30) -->
+                <polygon points="48.5,9 48.5,46.5 29,28.5" fill="#FF7A30" stroke="#FF7A30" stroke-width="1" transform="translate(-0.6 -0.6)" />
+                <polygon points="51.5,9 71,28.5 51.5,46.5" fill="#FF7A30" stroke="#FF7A30" stroke-width="1" transform="translate(0.6 -0.6)" />
+                <!-- Left Diamond (Black) -->
+                <polygon points="27,30.5 46.5,48.5 9,48.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(-1 -0.6)" />
+                <polygon points="9,51.5 46.5,51.5 27,69.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(-1 0.6)" />
+                <!-- Right Diamond (Black) -->
+                <polygon points="73,30.5 91,48.5 53.5,48.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(1 -0.6)" />
+                <polygon points="53.5,51.5 91,51.5 73,69.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(1 0.6)" />
+                <!-- Bottom Diamond (Black) -->
+                <polygon points="29,71.5 48.5,53.5 48.5,91" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(-0.6 1)" />
+                <polygon points="51.5,53.5 71,71.5 51.5,91" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(0.6 1)" />
+              </g>
+            </svg>
+          </div>
+          <!-- Wordmark: idiom (black) + ar (orange) -->
+          <a href="#" class="flex items-baseline tracking-tight">
+            <span class="text-2xl font-extrabold text-black">idiom</span>
+            <span class="text-2xl font-extrabold text-[#FF7A30]">ar</span>
+          </a>
+        </div>
+
+        <!-- Middle: Primary Navbar with Orange Underline on Active Tab -->
+        <nav class="hidden md:flex items-center h-full gap-2">
+          <a href="#" class="h-full flex items-center px-4 text-sm font-semibold text-black/60 hover:text-black transition-colors">
+            Home
+          </a>
+          <a href="#" class="h-full flex items-center px-4 text-sm font-semibold text-black/60 hover:text-black transition-colors">
+            Calendar
+          </a>
+          <a href="wireframes-students.html" class="h-full flex items-center px-4 text-sm font-semibold text-black/60 hover:text-black transition-colors">
+            Students
+          </a>
+          <!-- Active Tab: Lessons (Underlined with Orange Stripe) -->
+          <a href="#" class="relative h-full flex items-center px-4 text-sm font-bold text-black border-b-[3px] border-[#FF7A30] -mb-[1px]">
+            Lessons
+          </a>
+        </nav>
+
+        <!-- Right: Actions & Teacher Profile -->
+        <div class="flex items-center gap-3">
+          
+          <!-- Language Switcher (US English & LatAm Spanish only) -->
+          <div class="relative">
+            <button onclick="toggleDropdown('lang-menu')" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-black/15 bg-white text-xs font-semibold text-black hover:bg-neutral-50 transition-colors shadow-2xs">
+              <span class="text-sm">🇺🇸</span>
+              <span>English (US)</span>
+              <svg class="w-3.5 h-3.5 text-black/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <!-- Dropdown Menu -->
+            <div id="lang-menu" class="hidden absolute right-0 mt-1 w-44 bg-white rounded-xl shadow-lg border border-black/10 py-1.5 z-50 text-xs">
+              <a href="#" class="flex items-center gap-2 px-3 py-2 font-bold text-[#465C88] bg-[#465C88]/10">
+                <span>🇺🇸</span>
+                <span>English (US)</span>
+              </a>
+              <a href="#" class="flex items-center gap-2 px-3 py-2 font-medium text-black/80 hover:bg-black/5">
+                <span>🌎</span>
+                <span>Español (LatAm)</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Notification Bell -->
+          <div class="relative">
+            <button onclick="toggleDropdown('notif-menu')" class="relative p-2 rounded-lg text-black/70 hover:text-black hover:bg-black/5 transition-colors" title="Notifications">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              <!-- Unread Badge in Valencia Flame -->
+              <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#FF7A30] ring-2 ring-white"></span>
+            </button>
+            <!-- Notifications Popover -->
+            <div id="notif-menu" class="hidden absolute right-0 mt-1 w-72 bg-white rounded-xl shadow-xl border border-black/10 p-3 z-50 text-xs space-y-2">
+              <div class="font-bold text-black border-b border-black/10 pb-1.5 flex justify-between items-center">
+                <span>Notifications</span>
+                <span class="text-[10px] text-[#FF7A30] font-semibold">1 new</span>
+              </div>
+              <div class="p-2 rounded-lg bg-[#E9E3DF]/50 hover:bg-[#E9E3DF] cursor-pointer">
+                <span class="font-bold text-black block">Sofia Morales</span>
+                <span class="text-black/70">Submitted Homework: "Subjunctive Essay"</span>
+                <span class="text-[10px] text-black/40 block mt-0.5">25 mins ago</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Teacher Profile: Camila Rossi (Google Avatar) -->
+          <div class="flex items-center gap-2 pl-2 border-l border-black/10">
+            <div class="relative group cursor-pointer">
+              <!-- Avatar Circle -->
+              <div class="w-9 h-9 rounded-full overflow-hidden ring-2 ring-[#465C88]/20 bg-[#465C88] flex items-center justify-center text-white font-bold text-sm shadow-2xs">
+                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80" alt="Prof. Camila Rossi" class="w-full h-full object-cover">
+              </div>
+              <!-- Google Badge Icon -->
+              <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-white rounded-full p-0.5 shadow-xs flex items-center justify-center" title="Logged in with Google">
+                <svg viewBox="0 0 24 24" class="w-3 h-3">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+              </span>
+            </div>
+            <!-- Tutor Name -->
+            <div class="hidden xl:block text-left text-xs leading-tight">
+              <div class="font-bold text-black">Prof. Camila Rossi</div>
+              <div class="text-[10px] text-black/50 font-medium">Language Tutor</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================ -->
+  <!-- 2. LESSONS VIEW: SUB-HEADER TOOLBAR                          -->
+  <!-- ============================================================ -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    
+    <!-- Top Bar: Clean Student Selector + View Toggle + Schedule CTA -->
+    <div class="bg-white rounded-2xl p-4 md:p-5 shadow-xs border border-black/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      
+      <!-- Left Controls: Student Selector & Toggle -->
+      <div class="flex flex-wrap items-center gap-3 md:gap-4">
+        
+        <!-- 1. Student Selector Dropdown (Clean: Photo/Initials + Name Only) -->
+        <div class="relative">
+          <label class="block text-[10px] font-bold uppercase tracking-wider text-black/40 mb-1">
+            Student
+          </label>
+          <button onclick="toggleDropdown('student-menu')" class="flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-[#E9E3DF]/60 hover:bg-[#E9E3DF] border border-black/10 text-xs font-bold text-black transition-all shadow-2xs">
+            <span class="w-6 h-6 rounded-full bg-[#465C88] text-white flex items-center justify-center font-extrabold text-[11px]">
+              SM
+            </span>
+            <span class="text-xs font-bold text-black">Sofia Morales</span>
+            <svg class="w-4 h-4 text-black/60 ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <!-- Dropdown Menu (With Active / Archived Filter) -->
+          <div id="student-menu" class="hidden absolute left-0 mt-1.5 w-60 bg-white rounded-xl shadow-xl border border-black/10 p-1.5 z-30 text-xs">
+            <!-- Filter Tabs -->
+            <div class="flex items-center gap-1 p-1 bg-[#E9E3DF]/60 rounded-lg mb-1.5">
+              <button class="flex-1 py-1 text-center font-bold text-[11px] bg-white rounded shadow-2xs text-black">Active (3)</button>
+              <button class="flex-1 py-1 text-center font-medium text-[11px] text-black/60 hover:text-black">Archived (1)</button>
+            </div>
+            <!-- Student List -->
+            <div class="space-y-0.5">
+              <a href="#" class="flex items-center gap-2.5 px-2.5 py-2 rounded-lg bg-[#465C88]/10 text-[#465C88] font-bold">
+                <span class="w-6 h-6 rounded-full bg-[#465C88] text-white flex items-center justify-center text-[10px]">SM</span>
+                <span>Sofia Morales</span>
+              </a>
+              <a href="#" class="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-neutral-50 text-black/80 font-medium">
+                <span class="w-6 h-6 rounded-full bg-neutral-300 text-black flex items-center justify-center text-[10px]">LW</span>
+                <span>Lucas Weber</span>
+              </a>
+              <a href="#" class="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-neutral-50 text-black/80 font-medium">
+                <span class="w-6 h-6 rounded-full bg-neutral-300 text-black flex items-center justify-center text-[10px]">ER</span>
+                <span>Elena Rostova</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="h-8 w-px bg-black/10 hidden sm:block"></div>
+
+        <!-- 2. Segmented Toggle: Lessons vs. Vocabulary -->
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-wider text-black/40 mb-1">
+            Section
+          </label>
+          <div class="inline-flex p-1 bg-[#E9E3DF]/80 rounded-xl border border-black/10">
+            <!-- Lessons Option (Selected) -->
+            <button class="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-white text-black font-bold text-xs shadow-xs">
+              <svg class="w-3.5 h-3.5 text-[#FF7A30]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              <span>Lessons</span>
+            </button>
+            <!-- Vocabulary Option -->
+            <button class="flex items-center gap-2 px-4 py-1.5 rounded-lg text-black/60 hover:text-black font-semibold text-xs transition-colors">
+              <svg class="w-3.5 h-3.5 text-black/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+              <span>Vocabulary</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Action: Schedule New Lesson CTA -->
+      <div>
+        <button class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#FF7A30] hover:bg-[#e86b24] text-black font-bold text-xs shadow-sm transition-all hover:shadow hover:-translate-y-0.5">
+          <svg class="w-4 h-4 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>Schedule Lesson</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- 3. LESSONS LIST                                              -->
+    <!-- ============================================================ -->
+    <div class="space-y-4">
+      
+      <div class="flex items-center justify-between text-xs text-black/60 px-1">
+        <span class="font-bold text-black">Sofia Morales — Classes</span>
+        <span>Showing 4 sessions</span>
+      </div>
+
+      <!-- ---------------------------------------------------------- -->
+      <!-- CARD 1: FUTURE LESSON (STATUS: SCHEDULED ONLY)              -->
+      <!-- ---------------------------------------------------------- -->
+      <article class="bg-white rounded-2xl p-5 md:p-6 shadow-xs border border-[#FF7A30]/40 hover:border-[#FF7A30] transition-all">
+        <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-5">
+          
+          <!-- Left Column: Date & Details -->
+          <div class="space-y-3.5 flex-1">
+            
+            <!-- Date, Time, Scheduled Tag -->
+            <div class="flex flex-wrap items-center gap-2.5">
+              <!-- Scheduled Badge (No paid or payment notes) -->
+              <span class="px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-[#FF7A30]/15 text-[#c85614]">
+                Scheduled
+              </span>
+              <!-- Date -->
+              <span class="text-sm font-extrabold text-black">
+                Tomorrow, Nov 22, 2026
+              </span>
+              <!-- Time & Duration -->
+              <span class="text-xs font-semibold text-black/60 flex items-center gap-1">
+                <svg class="w-3.5 h-3.5 text-black/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                15:00 - 16:00 (ART) • 60 min
+              </span>
+            </div>
+
+            <!-- Description -->
+            <div>
+              <h3 class="text-base font-extrabold text-black">
+                Lesson #13: Subjunctive in Adverbial Clauses & Patagonia Travel Scenarios
+              </h3>
+              <p class="text-xs text-black/75 mt-1 leading-relaxed max-w-3xl">
+                Targeting conditional triggers: <em>"a menos que"</em>, <em>"en caso de que"</em>, and <em>"para que"</em>. Practice roleplaying travel dilemmas (booking mountain shelters in Bariloche, handling flight delays).
+              </p>
+            </div>
+
+            <!-- Homework Box -->
+            <div class="bg-[#E9E3DF]/50 rounded-xl p-3 border border-black/5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+              <div class="flex items-center gap-2">
+                <span class="text-base">📝</span>
+                <div>
+                  <span class="font-bold text-black">Homework:</span>
+                  <span class="text-black/80 ml-1">Write 250-word essay on travel plans using 5+ subjunctive clauses.</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-100 text-amber-900 font-bold text-[11px]">
+                  Pending Submission
+                </span>
+                <span class="text-[10px] text-black/50 font-medium">Due Today</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Column: Video Call Link & Status -->
+          <div class="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end justify-between gap-3 shrink-0 lg:w-52 pt-2 lg:pt-0 border-t lg:border-t-0 border-black/10">
+            
+            <!-- Video Call Launch Button -->
+            <a href="https://zoom.us/j/mock-idiomar-lesson" target="_blank" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#465C88] hover:bg-[#384a6e] text-white font-bold text-xs transition-all shadow-xs group">
+              <svg class="w-4 h-4 text-white group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              <span>Join Class</span>
+            </a>
+
+            <!-- Status Indicator -->
+            <div class="w-full text-left lg:text-right">
+              <span class="inline-flex items-center gap-1.5 text-xs font-bold text-[#c85614] bg-[#FF7A30]/15 px-2.5 py-1 rounded-lg">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#FF7A30]"></span>
+                <span>Scheduled</span>
+              </span>
+            </div>
+
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ---------------------------------------------------------- -->
+      <!-- CARD 2: PAST LESSON (STATUS: WAITING FOR PAYMENT)          -->
+      <!-- ---------------------------------------------------------- -->
+      <article class="bg-white rounded-2xl p-5 md:p-6 shadow-xs border border-amber-300 hover:border-amber-400 transition-all">
+        <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-5">
+          
+          <!-- Left Column -->
+          <div class="space-y-3.5 flex-1">
+            
+            <div class="flex flex-wrap items-center gap-2.5">
+              <span class="px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-black/10 text-black">
+                Completed
+              </span>
+              <span class="text-sm font-extrabold text-black">
+                Monday, Nov 17, 2026
+              </span>
+              <span class="text-xs font-semibold text-black/60 flex items-center gap-1">
+                15:00 - 16:00 (ART) • 60 min
+              </span>
+            </div>
+
+            <div>
+              <h3 class="text-base font-extrabold text-black">
+                Lesson #12: Narrative Past Tenses (Indefinido vs. Imperfecto) with Julio Cortázar
+              </h3>
+              <p class="text-xs text-black/75 mt-1 leading-relaxed max-w-3xl">
+                Read excerpt from <em>"Continuidad de los parques"</em>. Clarified habitual actions in the past vs punctual interruptions. Added 8 targeted vocabulary items to Sofia's deck.
+              </p>
+            </div>
+
+            <!-- Homework Box -->
+            <div class="bg-[#E9E3DF]/50 rounded-xl p-3 border border-black/5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+              <div class="flex items-center gap-2">
+                <span class="text-base">✅</span>
+                <div>
+                  <span class="font-bold text-black">Homework:</span>
+                  <span class="text-black/80 ml-1">Sentence transformation drill & voice recording.</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-900 font-bold text-[11px]">
+                  ✓ Feedback Provided
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Column: Status Waiting for payment with Recap & Words Button -->
+          <div class="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end justify-between gap-3 shrink-0 lg:w-52 pt-2 lg:pt-0 border-t lg:border-t-0 border-black/10">
+            
+            <!-- Secondary Action: Recap & Words -->
+            <button class="w-full inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl border border-black/20 bg-white hover:bg-neutral-50 text-black font-bold text-xs transition-colors">
+              <svg class="w-3.5 h-3.5 text-black/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              <span>Recap & 8 Words</span>
+            </button>
+
+            <!-- Status: Waiting for payment -->
+            <div class="w-full text-left lg:text-right">
+              <span class="inline-flex items-center gap-1.5 text-xs font-bold text-amber-900 bg-amber-100 border border-amber-300 px-2.5 py-1 rounded-lg">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
+                <span>Waiting for payment</span>
+              </span>
+            </div>
+
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ---------------------------------------------------------- -->
+      <!-- CARD 3: PAST LESSON (STATUS: CONFIRMED)                     -->
+      <!-- ---------------------------------------------------------- -->
+      <article class="bg-white rounded-2xl p-5 md:p-6 shadow-xs border border-black/10 hover:border-black/20 transition-all">
+        <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-5">
+          
+          <!-- Left Column -->
+          <div class="space-y-3.5 flex-1">
+            
+            <div class="flex flex-wrap items-center gap-2.5">
+              <span class="px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-black/10 text-black">
+                Completed
+              </span>
+              <span class="text-sm font-extrabold text-black">
+                Wednesday, Nov 12, 2026
+              </span>
+              <span class="text-xs font-semibold text-black/60 flex items-center gap-1">
+                15:00 - 16:00 (ART) • 60 min
+              </span>
+            </div>
+
+            <div>
+              <h3 class="text-base font-extrabold text-black">
+                Lesson #11: Argentine Slang (Lunfardo) & Colloquial Pronouns (Voseo)
+              </h3>
+              <p class="text-xs text-black/75 mt-1 leading-relaxed max-w-3xl">
+                Covered authentic everyday expressions used in Buenos Aires: <em>"che"</em>, <em>"laburo"</em>, <em>"posta"</em>, and dynamic conjugation with <em>"vos tenés / vos podés"</em>.
+              </p>
+            </div>
+
+            <!-- Homework Box -->
+            <div class="bg-[#E9E3DF]/50 rounded-xl p-3 border border-black/5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+              <div class="flex items-center gap-2">
+                <span class="text-base">🎧</span>
+                <div>
+                  <span class="font-bold text-black">Homework:</span>
+                  <span class="text-black/80 ml-1">Listen to 5-minute Buenos Aires podcast and summarize 3 Lunfardo words.</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-900 font-bold text-[11px]">
+                  ✓ Reviewed
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Column: Status Confirmed with Recap & Words Button -->
+          <div class="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end justify-between gap-3 shrink-0 lg:w-52 pt-2 lg:pt-0 border-t lg:border-t-0 border-black/10">
+            
+            <!-- Secondary Action: Recap & Words -->
+            <button class="w-full inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl border border-black/20 bg-white hover:bg-neutral-50 text-black font-bold text-xs transition-colors">
+              <svg class="w-3.5 h-3.5 text-black/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              <span>Recap & 6 Words</span>
+            </button>
+
+            <!-- Clean Status: Confirmed -->
+            <div class="w-full text-left lg:text-right">
+              <span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg">
+                <svg class="w-3.5 h-3.5 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                <span>Confirmed</span>
+              </span>
+            </div>
+
+          </div>
+
+        </div>
+      </article>
+
+      <!-- ---------------------------------------------------------- -->
+      <!-- CARD 4: PAST LESSON (STATUS: CANCELED)                      -->
+      <!-- ---------------------------------------------------------- -->
+      <article class="bg-white/80 rounded-2xl p-5 md:p-6 shadow-xs border border-black/10 opacity-75 hover:opacity-100 transition-all">
+        <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-5">
+          
+          <!-- Left Column -->
+          <div class="space-y-3.5 flex-1">
+            
+            <div class="flex flex-wrap items-center gap-2.5">
+              <span class="px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-neutral-200 text-neutral-700">
+                Canceled
+              </span>
+              <span class="text-sm font-bold text-neutral-500 line-through">
+                Friday, Nov 07, 2026
+              </span>
+              <span class="text-xs font-medium text-neutral-400">
+                15:00 - 16:00 (ART)
+              </span>
+            </div>
+
+            <div>
+              <h3 class="text-base font-bold text-neutral-600">
+                Lesson #10: Conversational Fluency Practice
+              </h3>
+              <p class="text-xs text-neutral-500 mt-1">
+                Session canceled with >24h advance notice due to student work trip. Time slot freed on calendar.
+              </p>
+            </div>
+
+          </div>
+
+          <!-- Right Column: Status Canceled -->
+          <div class="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end justify-between gap-3 shrink-0 lg:w-52 pt-2 lg:pt-0 border-t lg:border-t-0 border-black/10">
+            
+            <span class="w-full text-center text-xs text-neutral-400 py-1.5">
+              No session conducted
+            </span>
+
+            <!-- Status: Canceled -->
+            <div class="w-full text-left lg:text-right">
+              <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-600 bg-neutral-100 border border-neutral-300 px-2.5 py-1 rounded-lg">
+                <span>Canceled</span>
+              </span>
+            </div>
+
+          </div>
+
+        </div>
+      </article>
+
+    </div>
+
+  </main>
+
+  <!-- Interactive Dropdown Toggle Script -->
+  <script>
+    function toggleDropdown(id) {
+      const el = document.getElementById(id);
+      const isHidden = el.classList.contains('hidden');
+      document.querySelectorAll('#lang-menu, #notif-menu, #student-menu').forEach(menu => menu.classList.add('hidden'));
+      if (isHidden) {
+        el.classList.remove('hidden');
+      }
+    }
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('header') && !e.target.closest('main')) {
+        document.querySelectorAll('#lang-menu, #notif-menu, #student-menu').forEach(menu => menu.classList.add('hidden'));
+      }
+    });
+  </script>
+</body>
+</html>

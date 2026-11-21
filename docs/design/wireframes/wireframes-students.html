@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IDIOMAR — Teacher UI Wireframe (Students & Billing View)</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Smooth slide over transition for side panel */
+    .slide-panel {
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+  </style>
+</head>
+<body class="bg-[#E9E3DF] text-[#000000] antialiased min-h-screen selection:bg-[#FF7A30] selection:text-white relative overflow-x-hidden">
+
+  <!-- ============================================================ -->
+  <!-- 1. GLOBAL TEACHER NAVIGATION HEADER                          -->
+  <!-- ============================================================ -->
+  <header class="sticky top-0 z-40 bg-white border-b border-black/10 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Left: Logo & Wordmark (idiom [black] + ar [orange]) -->
+        <div class="flex items-center gap-3 shrink-0">
+          <div class="w-9 h-9">
+            <svg viewBox="0 0 100 100" class="w-full h-full" fill="none">
+              <g stroke-linejoin="round" stroke-linecap="round">
+                <polygon points="48.5,9 48.5,46.5 29,28.5" fill="#FF7A30" stroke="#FF7A30" stroke-width="1" transform="translate(-0.6 -0.6)" />
+                <polygon points="51.5,9 71,28.5 51.5,46.5" fill="#FF7A30" stroke="#FF7A30" stroke-width="1" transform="translate(0.6 -0.6)" />
+                <polygon points="27,30.5 46.5,48.5 9,48.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(-1 -0.6)" />
+                <polygon points="9,51.5 46.5,51.5 27,69.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(-1 0.6)" />
+                <polygon points="73,30.5 91,48.5 53.5,48.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(1 -0.6)" />
+                <polygon points="53.5,51.5 91,51.5 73,69.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(1 0.6)" />
+                <polygon points="29,71.5 48.5,53.5 48.5,91" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(-0.6 1)" />
+                <polygon points="51.5,53.5 71,71.5 51.5,91" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(0.6 1)" />
+              </g>
+            </svg>
+          </div>
+          <a href="#" class="flex items-baseline tracking-tight">
+            <span class="text-2xl font-extrabold text-black">idiom</span>
+            <span class="text-2xl font-extrabold text-[#FF7A30]">ar</span>
+          </a>
+        </div>
+
+        <!-- Middle: Primary Navbar (Students is Active with Orange Underline) -->
+        <nav class="hidden md:flex items-center h-full gap-2">
+          <a href="#" class="h-full flex items-center px-4 text-sm font-semibold text-black/60 hover:text-black transition-colors">
+            Home
+          </a>
+          <a href="#" class="h-full flex items-center px-4 text-sm font-semibold text-black/60 hover:text-black transition-colors">
+            Calendar
+          </a>
+          <!-- Active Tab: Students -->
+          <a href="#" class="relative h-full flex items-center px-4 text-sm font-bold text-black border-b-[3px] border-[#FF7A30] -mb-[1px]">
+            Students
+          </a>
+          <a href="wireframes-lessons.html" class="h-full flex items-center px-4 text-sm font-semibold text-black/60 hover:text-black transition-colors">
+            Lessons
+          </a>
+        </nav>
+
+        <!-- Right: Actions & Teacher Profile -->
+        <div class="flex items-center gap-3">
+          
+          <!-- Language Switcher (US English & LatAm Spanish) -->
+          <div class="relative">
+            <button onclick="toggleDropdown('lang-menu')" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-black/15 bg-white text-xs font-semibold text-black hover:bg-neutral-50 transition-colors shadow-2xs">
+              <span class="text-sm">🇺🇸</span>
+              <span>English (US)</span>
+              <svg class="w-3.5 h-3.5 text-black/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div id="lang-menu" class="hidden absolute right-0 mt-1 w-44 bg-white rounded-xl shadow-lg border border-black/10 py-1.5 z-50 text-xs">
+              <a href="#" class="flex items-center gap-2 px-3 py-2 font-bold text-[#465C88] bg-[#465C88]/10">
+                <span>🇺🇸</span>
+                <span>English (US)</span>
+              </a>
+              <a href="#" class="flex items-center gap-2 px-3 py-2 font-medium text-black/80 hover:bg-black/5">
+                <span>🌎</span>
+                <span>Español (LatAm)</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Notification Bell -->
+          <div class="relative">
+            <button onclick="toggleDropdown('notif-menu')" class="relative p-2 rounded-lg text-black/70 hover:text-black hover:bg-black/5 transition-colors" title="Notifications">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#FF7A30] ring-2 ring-white"></span>
+            </button>
+            <div id="notif-menu" class="hidden absolute right-0 mt-1 w-72 bg-white rounded-xl shadow-xl border border-black/10 p-3 z-50 text-xs space-y-2">
+              <div class="font-bold text-black border-b border-black/10 pb-1.5 flex justify-between items-center">
+                <span>Notifications</span>
+                <span class="text-[10px] text-[#FF7A30] font-semibold">1 new</span>
+              </div>
+              <div class="p-2 rounded-lg bg-[#E9E3DF]/50 hover:bg-[#E9E3DF] cursor-pointer">
+                <span class="font-bold text-black block">Sofia Morales</span>
+                <span class="text-black/70">Submitted Homework: "Subjunctive Essay"</span>
+                <span class="text-[10px] text-black/40 block mt-0.5">25 mins ago</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Teacher Profile: Camila Rossi -->
+          <div class="flex items-center gap-2 pl-2 border-l border-black/10">
+            <div class="relative group cursor-pointer">
+              <div class="w-9 h-9 rounded-full overflow-hidden ring-2 ring-[#465C88]/20 bg-[#465C88] flex items-center justify-center text-white font-bold text-sm shadow-2xs">
+                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80" alt="Prof. Camila Rossi" class="w-full h-full object-cover">
+              </div>
+              <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-white rounded-full p-0.5 shadow-xs flex items-center justify-center" title="Logged in with Google">
+                <svg viewBox="0 0 24 24" class="w-3 h-3">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+              </span>
+            </div>
+            <div class="hidden xl:block text-left text-xs leading-tight">
+              <div class="font-bold text-black">Prof. Camila Rossi</div>
+              <div class="text-[10px] text-black/50 font-medium">Language Tutor</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================ -->
+  <!-- 2. MAIN SECTION: STUDENTS ROSTER                             -->
+  <!-- ============================================================ -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    
+    <!-- Top Filter Bar: Search + Active/Archived Toggle + Add Student -->
+    <div class="bg-white rounded-2xl p-4 md:p-5 shadow-xs border border-black/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      
+      <!-- Search Input + Active/Archived Filter -->
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3 md:gap-4 flex-1 max-w-2xl">
+        
+        <!-- Search Input -->
+        <div class="relative flex-1">
+          <svg class="w-4 h-4 text-black/40 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input 
+            type="text" 
+            id="student-search" 
+            oninput="handleSearch(this.value)"
+            placeholder="Search students by name or language..." 
+            class="w-full pl-10 pr-4 py-2 rounded-xl bg-[#E9E3DF]/50 border border-black/10 text-xs font-semibold placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-[#FF7A30] focus:bg-white transition-all"
+          >
+        </div>
+
+        <!-- Active / Archived Toggle -->
+        <div class="inline-flex p-1 bg-[#E9E3DF]/80 rounded-xl border border-black/10 shrink-0">
+          <button id="tab-active" onclick="setStudentFilter('active')" class="px-4 py-1.5 rounded-lg bg-white text-black font-bold text-xs shadow-xs transition-all">
+            Active (3)
+          </button>
+          <button id="tab-archived" onclick="setStudentFilter('archived')" class="px-4 py-1.5 rounded-lg text-black/60 hover:text-black font-semibold text-xs transition-all">
+            Archived (1)
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Add Student CTA Button -->
+      <div>
+        <button onclick="alert('Open Add Student modal: prompts student email, target language, CEFR level, and agreed hourly rate.')" class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#FF7A30] hover:bg-[#e86b24] text-black font-bold text-xs shadow-sm transition-all hover:shadow hover:-translate-y-0.5">
+          <svg class="w-4 h-4 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>Add New Student</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Students Table / List Container -->
+    <div class="bg-white rounded-2xl shadow-xs border border-black/10 overflow-hidden">
+      
+      <!-- Table Header -->
+      <div class="grid grid-cols-12 px-6 py-3.5 bg-[#E9E3DF]/40 border-b border-black/10 text-[11px] font-bold uppercase tracking-wider text-black/50">
+        <div class="col-span-4 sm:col-span-4">Student & Target Language</div>
+        <div class="col-span-3 sm:col-span-3 text-center sm:text-left">Balance (Classes Left)</div>
+        <div class="col-span-2 text-center">Level</div>
+        <div class="col-span-3 text-right">Actions</div>
+      </div>
+
+      <!-- Students Rows Feed -->
+      <div id="students-list" class="divide-y divide-black/5">
+        
+        <!-- STUDENT 1: SOFIA MORALES (ACTIVE) -->
+        <div class="student-row active-student grid grid-cols-12 items-center px-6 py-4 hover:bg-neutral-50/80 transition-colors cursor-pointer group" onclick="openStudentDrawer('sofia')">
+          
+          <!-- 1. Icon & Name -->
+          <div class="col-span-4 flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-full bg-[#465C88] text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs group-hover:ring-2 group-hover:ring-[#FF7A30]/50 transition-all">
+              SM
+            </div>
+            <div>
+              <div class="font-extrabold text-sm text-black group-hover:text-[#465C88] transition-colors flex items-center gap-1.5">
+                <span>Sofia Morales</span>
+                <span class="text-[10px] text-[#465C88] font-bold bg-[#465C88]/10 px-1.5 py-0.2 rounded-md">View details &rarr;</span>
+              </div>
+              <div class="text-xs text-black/50 font-medium">Spanish • Mentored since Oct 2026</div>
+            </div>
+          </div>
+
+          <!-- 2. Balance (Classes Left) -->
+          <div class="col-span-3">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 font-mono">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+              <span>3 classes left</span>
+            </span>
+            <span class="text-[10px] text-black/40 block mt-0.5 ml-1">Next: Tomorrow at 15:00</span>
+          </div>
+
+          <!-- 3. CEFR Level -->
+          <div class="col-span-2 text-center">
+            <span class="inline-block px-2.5 py-0.5 rounded-md text-xs font-bold bg-[#465C88]/15 text-[#465C88] border border-[#465C88]/30">
+              B2
+            </span>
+          </div>
+
+          <!-- 4. Schedule Class Button & Three Dots Menu -->
+          <div class="col-span-3 flex items-center justify-end gap-2.5" onclick="event.stopPropagation()">
+            <!-- Schedule CTA -->
+            <button onclick="alert('Opening calendar scheduling modal for Sofia Morales')" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#465C88] hover:bg-[#384a6e] text-white font-bold text-xs transition-all shadow-xs">
+              <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span class="hidden sm:inline">Schedule Class</span>
+            </button>
+
+            <!-- Three Dots Action Button -->
+            <div class="relative">
+              <button onclick="toggleRowMenu('menu-sofia')" class="p-2 rounded-xl border border-black/10 hover:bg-neutral-100 text-black/70 hover:text-black transition-colors" title="Other Actions">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                </svg>
+              </button>
+              <!-- Dropdown Menu -->
+              <div id="menu-sofia" class="hidden absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-xl border border-black/10 py-1.5 z-30 text-xs">
+                <button onclick="promptChangePrice('Sofia Morales', 24)" class="w-full text-left px-3.5 py-2 hover:bg-neutral-50 font-semibold text-black flex items-center gap-2">
+                  <span>💲</span>
+                  <span>Change Price ($24/h)</span>
+                </button>
+                <button onclick="archiveStudent('Sofia Morales')" class="w-full text-left px-3.5 py-2 hover:bg-neutral-50 font-semibold text-amber-700 flex items-center gap-2">
+                  <span>📦</span>
+                  <span>Archive Student</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- STUDENT 2: LUCAS WEBER (ACTIVE - 0 CLASSES LEFT) -->
+        <div class="student-row active-student grid grid-cols-12 items-center px-6 py-4 hover:bg-neutral-50/80 transition-colors cursor-pointer group" onclick="openStudentDrawer('lucas')">
+          
+          <!-- 1. Icon & Name -->
+          <div class="col-span-4 flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-full bg-neutral-300 text-black flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs group-hover:ring-2 group-hover:ring-[#FF7A30]/50 transition-all">
+              LW
+            </div>
+            <div>
+              <div class="font-extrabold text-sm text-black group-hover:text-[#465C88] transition-colors flex items-center gap-1.5">
+                <span>Lucas Weber</span>
+                <span class="text-[10px] text-[#465C88] font-bold bg-[#465C88]/10 px-1.5 py-0.2 rounded-md">View details &rarr;</span>
+              </div>
+              <div class="text-xs text-black/50 font-medium">Spanish • Mentored since Sep 2026</div>
+            </div>
+          </div>
+
+          <!-- 2. Balance (Classes Left) -->
+          <div class="col-span-3">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold text-amber-900 bg-amber-50 border border-amber-200 font-mono">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+              <span>0 classes left</span>
+            </span>
+            <span class="text-[10px] text-amber-700 font-semibold block mt-0.5 ml-1">Needs payment renewal</span>
+          </div>
+
+          <!-- 3. CEFR Level -->
+          <div class="col-span-2 text-center">
+            <span class="inline-block px-2.5 py-0.5 rounded-md text-xs font-bold bg-[#465C88]/15 text-[#465C88] border border-[#465C88]/30">
+              A2
+            </span>
+          </div>
+
+          <!-- 4. Schedule Class Button & Three Dots Menu -->
+          <div class="col-span-3 flex items-center justify-end gap-2.5" onclick="event.stopPropagation()">
+            <button onclick="alert('Opening calendar scheduling modal for Lucas Weber')" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#465C88] hover:bg-[#384a6e] text-white font-bold text-xs transition-all shadow-xs">
+              <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span class="hidden sm:inline">Schedule Class</span>
+            </button>
+
+            <div class="relative">
+              <button onclick="toggleRowMenu('menu-lucas')" class="p-2 rounded-xl border border-black/10 hover:bg-neutral-100 text-black/70 hover:text-black transition-colors" title="Other Actions">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                </svg>
+              </button>
+              <div id="menu-lucas" class="hidden absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-xl border border-black/10 py-1.5 z-30 text-xs">
+                <button onclick="promptChangePrice('Lucas Weber', 20)" class="w-full text-left px-3.5 py-2 hover:bg-neutral-50 font-semibold text-black flex items-center gap-2">
+                  <span>💲</span>
+                  <span>Change Price ($20/h)</span>
+                </button>
+                <button onclick="archiveStudent('Lucas Weber')" class="w-full text-left px-3.5 py-2 hover:bg-neutral-50 font-semibold text-amber-700 flex items-center gap-2">
+                  <span>📦</span>
+                  <span>Archive Student</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- STUDENT 3: ELENA ROSTOVA (ACTIVE - 8 CLASSES LEFT) -->
+        <div class="student-row active-student grid grid-cols-12 items-center px-6 py-4 hover:bg-neutral-50/80 transition-colors cursor-pointer group" onclick="openStudentDrawer('elena')">
+          
+          <!-- 1. Icon & Name -->
+          <div class="col-span-4 flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs group-hover:ring-2 group-hover:ring-[#FF7A30]/50 transition-all">
+              ER
+            </div>
+            <div>
+              <div class="font-extrabold text-sm text-black group-hover:text-[#465C88] transition-colors flex items-center gap-1.5">
+                <span>Elena Rostova</span>
+                <span class="text-[10px] text-[#465C88] font-bold bg-[#465C88]/10 px-1.5 py-0.2 rounded-md">View details &rarr;</span>
+              </div>
+              <div class="text-xs text-black/50 font-medium">Spanish • Mentored since Nov 2026</div>
+            </div>
+          </div>
+
+          <!-- 2. Balance (Classes Left) -->
+          <div class="col-span-3">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 font-mono">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+              <span>8 classes left</span>
+            </span>
+            <span class="text-[10px] text-black/40 block mt-0.5 ml-1">New 8-class batch active</span>
+          </div>
+
+          <!-- 3. CEFR Level -->
+          <div class="col-span-2 text-center">
+            <span class="inline-block px-2.5 py-0.5 rounded-md text-xs font-bold bg-[#465C88]/15 text-[#465C88] border border-[#465C88]/30">
+              C1
+            </span>
+          </div>
+
+          <!-- 4. Schedule Class Button & Three Dots Menu -->
+          <div class="col-span-3 flex items-center justify-end gap-2.5" onclick="event.stopPropagation()">
+            <button onclick="alert('Opening calendar scheduling modal for Elena Rostova')" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#465C88] hover:bg-[#384a6e] text-white font-bold text-xs transition-all shadow-xs">
+              <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span class="hidden sm:inline">Schedule Class</span>
+            </button>
+
+            <div class="relative">
+              <button onclick="toggleRowMenu('menu-elena')" class="p-2 rounded-xl border border-black/10 hover:bg-neutral-100 text-black/70 hover:text-black transition-colors" title="Other Actions">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                </svg>
+              </button>
+              <div id="menu-elena" class="hidden absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-xl border border-black/10 py-1.5 z-30 text-xs">
+                <button onclick="promptChangePrice('Elena Rostova', 26)" class="w-full text-left px-3.5 py-2 hover:bg-neutral-50 font-semibold text-black flex items-center gap-2">
+                  <span>💲</span>
+                  <span>Change Price ($26/h)</span>
+                </button>
+                <button onclick="archiveStudent('Elena Rostova')" class="w-full text-left px-3.5 py-2 hover:bg-neutral-50 font-semibold text-amber-700 flex items-center gap-2">
+                  <span>📦</span>
+                  <span>Archive Student</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- STUDENT 4: MARCO ROSSI (ARCHIVED) -->
+        <div class="student-row archived-student hidden grid-cols-12 items-center px-6 py-4 bg-neutral-50/60 hover:bg-neutral-100/70 transition-colors cursor-pointer group opacity-85" onclick="openStudentDrawer('marco')">
+          
+          <!-- 1. Icon & Name -->
+          <div class="col-span-4 flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-full bg-neutral-400 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs">
+              MR
+            </div>
+            <div>
+              <div class="font-extrabold text-sm text-neutral-700 flex items-center gap-2">
+                <span>Marco Rossi</span>
+                <span class="text-[10px] bg-neutral-200 text-neutral-600 px-1.5 py-0.2 rounded font-bold uppercase tracking-wider">Archived</span>
+              </div>
+              <div class="text-xs text-neutral-500 font-medium">Spanish • Completed Course (Aug 2026)</div>
+            </div>
+          </div>
+
+          <!-- 2. Balance (Classes Left) -->
+          <div class="col-span-3">
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold text-neutral-600 bg-neutral-200/60 font-mono">
+              0 classes left
+            </span>
+            <span class="text-[10px] text-neutral-400 block mt-0.5 ml-1">All sessions completed</span>
+          </div>
+
+          <!-- 3. CEFR Level -->
+          <div class="col-span-2 text-center">
+            <span class="inline-block px-2.5 py-0.5 rounded-md text-xs font-bold bg-neutral-200 text-neutral-600">
+              B1
+            </span>
+          </div>
+
+          <!-- 4. Reactivate / Three dots -->
+          <div class="col-span-3 flex items-center justify-end gap-2.5" onclick="event.stopPropagation()">
+            <button onclick="reactivateStudent('Marco Rossi')" class="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-black/20 bg-white hover:bg-neutral-50 text-black font-bold text-xs transition-all shadow-xs">
+              <span>Reactivate</span>
+            </button>
+
+            <div class="relative">
+              <button onclick="toggleRowMenu('menu-marco')" class="p-2 rounded-xl border border-black/10 hover:bg-neutral-100 text-black/70 hover:text-black transition-colors" title="Other Actions">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                </svg>
+              </button>
+              <div id="menu-marco" class="hidden absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-xl border border-black/10 py-1.5 z-30 text-xs">
+                <button onclick="promptChangePrice('Marco Rossi', 22)" class="w-full text-left px-3.5 py-2 hover:bg-neutral-50 font-semibold text-black flex items-center gap-2">
+                  <span>💲</span>
+                  <span>Change Price ($22/h)</span>
+                </button>
+                <button onclick="reactivateStudent('Marco Rossi')" class="w-full text-left px-3.5 py-2 hover:bg-neutral-50 font-semibold text-emerald-700 flex items-center gap-2">
+                  <span>🔄</span>
+                  <span>Unarchive Student</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ============================================================ -->
+  <!-- 3. SLIDE-OUT STUDENT DETAIL & PAYMENT HISTORY SIDE PANEL     -->
+  <!-- ============================================================ -->
+  
+  <!-- Backdrop Overlay -->
+  <div id="drawer-backdrop" onclick="closeStudentDrawer()" class="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+  <!-- Slide-Over Drawer Container -->
+  <aside id="student-drawer" class="slide-panel fixed top-0 right-0 h-full w-full max-w-lg bg-white shadow-2xl border-l border-black/10 z-50 translate-x-full flex flex-col justify-between overflow-y-auto">
+    
+    <div>
+      <!-- Drawer Header Bar -->
+      <div class="sticky top-0 bg-white border-b border-black/10 p-5 flex items-center justify-between z-10">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-black/40">Student Dossier</span>
+          <span id="drawer-status-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+            Active Student
+          </span>
+        </div>
+        <!-- Close Button -->
+        <button onclick="closeStudentDrawer()" class="p-1.5 rounded-lg hover:bg-neutral-100 text-black/60 hover:text-black transition-colors" title="Close panel">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Drawer Body Content -->
+      <div class="p-6 space-y-6">
+        
+        <!-- Student Bio Card -->
+        <div class="flex items-start gap-4 pb-6 border-b border-black/10">
+          <div id="drawer-avatar" class="w-16 h-16 rounded-2xl bg-[#465C88] text-white flex items-center justify-center font-extrabold text-xl shadow-xs shrink-0">
+            SM
+          </div>
+          <div class="space-y-1">
+            <h2 id="drawer-name" class="text-xl font-extrabold text-black leading-tight">Sofia Morales</h2>
+            <div id="drawer-email" class="text-xs font-medium text-black/60 font-mono">sofia.morales@gmail.com</div>
+            <div class="flex items-center gap-2 pt-1">
+              <span id="drawer-cefr" class="px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#465C88]/15 text-[#465C88]">
+                CEFR: B2
+              </span>
+              <span class="text-xs text-black/50">•</span>
+              <span id="drawer-target-lang" class="text-xs font-bold text-black/70">Spanish for Business & Travel</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Learning Needs & Goals Box -->
+        <div class="space-y-1.5">
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-black/40">
+            Pedagogical Needs & Learning Goals
+          </label>
+          <div id="drawer-goals" class="p-4 rounded-xl bg-[#E9E3DF]/50 border border-black/5 text-xs text-black/80 leading-relaxed">
+            Preparing for DELE B2 exam in November. Focus on advanced subjunctive in adverbial clauses, formal business email correspondence, and conversational speed. Enjoys contemporary Argentine short stories and news podcasts.
+          </div>
+        </div>
+
+        <!-- Agreed Legacy Rate & Ledger Balance Grid -->
+        <div class="grid grid-cols-2 gap-3 p-4 rounded-xl bg-neutral-50 border border-black/5">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-black/40 block">Agreed Lesson Price</span>
+            <div class="flex items-baseline gap-1 mt-0.5">
+              <span id="drawer-rate" class="text-lg font-extrabold font-mono text-black">$24.00</span>
+              <span class="text-xs font-semibold text-black/50">USD / hour</span>
+            </div>
+          </div>
+          <div>
+            <span class="text-[10px] uppercase font-bold text-black/40 block">Current Balance</span>
+            <div class="flex items-baseline gap-1 mt-0.5">
+              <span id="drawer-balance" class="text-lg font-extrabold font-mono text-emerald-700">3 lessons</span>
+              <span class="text-xs font-semibold text-emerald-600">prepaid</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Primary Action: Button to Log a Payment -->
+        <div>
+          <button onclick="toggleLogPaymentForm()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#FF7A30] hover:bg-[#e86b24] text-black font-extrabold text-xs shadow-sm transition-all hover:shadow">
+            <svg class="w-4 h-4 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+            </svg>
+            <span>+ Log New Payment (Credit Lessons)</span>
+          </button>
+        </div>
+
+        <!-- Inline Mock Log Payment Form (Toggled by button) -->
+        <div id="log-payment-form" class="hidden p-4 rounded-xl bg-[#E9E3DF]/60 border border-[#FF7A30]/40 space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-extrabold text-black">Record Payment Received</span>
+            <button onclick="toggleLogPaymentForm()" class="text-xs text-black/50 hover:text-black font-bold">Cancel</button>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div>
+              <label class="block text-[10px] font-bold text-black/60 mb-0.5">Amount ($)</label>
+              <input type="number" value="192.00" class="w-full p-2 rounded-lg bg-white border border-black/15 font-mono font-bold">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-black/60 mb-0.5">Lessons Credited</label>
+              <input type="number" value="8" class="w-full p-2 rounded-lg bg-white border border-black/15 font-mono font-bold">
+            </div>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-black/60 mb-0.5">Channel / Method</label>
+            <select class="w-full p-2 rounded-lg bg-white border border-black/15 text-xs font-semibold">
+              <option>PayPal</option>
+              <option>Wise</option>
+              <option>Bank Transfer</option>
+              <option>Cash</option>
+            </select>
+          </div>
+          <button onclick="submitMockPayment()" class="w-full py-2 bg-[#465C88] hover:bg-[#384a6e] text-white text-xs font-bold rounded-lg shadow-2xs">
+            Confirm & Credit 8 Lessons
+          </button>
+        </div>
+
+        <!-- Payment History Ledger Section -->
+        <div class="space-y-3 pt-2">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-extrabold uppercase tracking-wider text-black/50">
+              Payment History Ledger
+            </h3>
+            <span class="text-[11px] font-mono font-bold text-black/60">Total: $432.00 USD</span>
+          </div>
+
+          <!-- Payments List / Rows -->
+          <div id="drawer-payments" class="space-y-2 text-xs font-medium">
+            
+            <!-- Payment 1 -->
+            <div class="p-3 rounded-xl bg-white border border-black/10 flex items-center justify-between shadow-2xs">
+              <div class="space-y-0.5">
+                <div class="font-bold text-black flex items-center gap-1.5">
+                  <span class="font-mono text-emerald-700 font-extrabold">+$192.00 USD</span>
+                  <span class="text-[10px] font-bold bg-neutral-100 text-black/70 px-1.5 py-0.2 rounded font-mono">8 Lessons</span>
+                </div>
+                <div class="text-[11px] text-black/50">Nov 05, 2026 • PayPal Transfer</div>
+              </div>
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                ✓ Verified
+              </span>
+            </div>
+
+            <!-- Payment 2 -->
+            <div class="p-3 rounded-xl bg-white border border-black/10 flex items-center justify-between shadow-2xs">
+              <div class="space-y-0.5">
+                <div class="font-bold text-black flex items-center gap-1.5">
+                  <span class="font-mono text-emerald-700 font-extrabold">+$144.00 USD</span>
+                  <span class="text-[10px] font-bold bg-neutral-100 text-black/70 px-1.5 py-0.2 rounded font-mono">6 Lessons</span>
+                </div>
+                <div class="text-[11px] text-black/50">Oct 08, 2026 • Wise Transfer</div>
+              </div>
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                ✓ Verified
+              </span>
+            </div>
+
+            <!-- Payment 3 -->
+            <div class="p-3 rounded-xl bg-white border border-black/10 flex items-center justify-between shadow-2xs">
+              <div class="space-y-0.5">
+                <div class="font-bold text-black flex items-center gap-1.5">
+                  <span class="font-mono text-emerald-700 font-extrabold">+$96.00 USD</span>
+                  <span class="text-[10px] font-bold bg-neutral-100 text-black/70 px-1.5 py-0.2 rounded font-mono">4 Lessons</span>
+                </div>
+                <div class="text-[11px] text-black/50">Sep 10, 2026 • Cash Handshake</div>
+              </div>
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                ✓ Verified
+              </span>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Drawer Footer Actions -->
+    <div class="p-5 bg-neutral-50 border-t border-black/10 flex items-center justify-between text-xs">
+      <button onclick="promptChangePrice('Current Student', 24)" class="font-bold text-[#465C88] hover:underline flex items-center gap-1">
+        <span>⚙️ Edit Pricing</span>
+      </button>
+      <button id="drawer-archive-btn" onclick="alert('Archive student action')" class="font-bold text-amber-700 hover:underline">
+        Archive Student
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- ============================================================ -->
+  <!-- 4. INTERACTIVE SCRIPTS                                        -->
+  <!-- ============================================================ -->
+  <script>
+    // Mock student data store
+    const studentsData = {
+      sofia: {
+        name: "Sofia Morales",
+        email: "sofia.morales@gmail.com",
+        initials: "SM",
+        bg: "#465C88",
+        cefr: "CEFR: B2",
+        status: "Active Student",
+        statusClass: "bg-emerald-100 text-emerald-800",
+        lang: "Spanish for Business & Travel",
+        goals: "Preparing for DELE B2 exam in November. Focus on advanced subjunctive in adverbial clauses, formal business email correspondence, and conversational speed. Enjoys contemporary Argentine short stories and news podcasts.",
+        rate: "$24.00",
+        balance: "3 lessons",
+        payments: [
+          { amount: "+$192.00 USD", lessons: "8 Lessons", date: "Nov 05, 2026", method: "PayPal Transfer", status: "Verified" },
+          { amount: "+$144.00 USD", lessons: "6 Lessons", date: "Oct 08, 2026", method: "Wise Transfer", status: "Verified" },
+          { amount: "+$96.00 USD", lessons: "4 Lessons", date: "Sep 10, 2026", method: "Cash Handshake", status: "Verified" }
+        ]
+      },
+      lucas: {
+        name: "Lucas Weber",
+        email: "lucas.weber@outlook.de",
+        initials: "LW",
+        bg: "#555555",
+        cefr: "CEFR: A2",
+        status: "Active Student",
+        statusClass: "bg-emerald-100 text-emerald-800",
+        lang: "Spanish for Vacation & Everyday",
+        goals: "Wants conversational basics for upcoming 3-month trip through Patagonia and northern Chile. Needs reinforcement on irregular past tenses (fui vs estuve) and ordering food in local restaurants.",
+        rate: "$20.00",
+        balance: "0 lessons",
+        payments: [
+          { amount: "+$160.00 USD", lessons: "8 Lessons", date: "Oct 01, 2026", method: "Wise Transfer", status: "Verified" },
+          { amount: "+$80.00 USD", lessons: "4 Lessons", date: "Sep 02, 2026", method: "PayPal Transfer", status: "Verified" }
+        ]
+      },
+      elena: {
+        name: "Elena Rostova",
+        email: "elena.rostova@techmail.io",
+        initials: "ER",
+        bg: "#047857",
+        cefr: "CEFR: C1",
+        status: "Active Student",
+        statusClass: "bg-emerald-100 text-emerald-800",
+        lang: "Spanish for Technical Leadership",
+        goals: "Senior product manager managing remote teams in Buenos Aires and Bogotá. Focuses on nuanced idiomatic humor, meeting facilitation, and advanced diplomatic phrasing.",
+        rate: "$26.00",
+        balance: "8 lessons",
+        payments: [
+          { amount: "+$208.00 USD", lessons: "8 Lessons", date: "Nov 18, 2026", method: "Bank Transfer", status: "Verified" }
+        ]
+      },
+      marco: {
+        name: "Marco Rossi",
+        email: "marco.rossi@libero.it",
+        initials: "MR",
+        bg: "#737373",
+        cefr: "CEFR: B1",
+        status: "Archived Student",
+        statusClass: "bg-neutral-200 text-neutral-700",
+        lang: "Spanish General Course",
+        goals: "Completed 6-month intensive foundation course before relocating to Madrid. All course goals met successfully in August 2026.",
+        rate: "$22.00",
+        balance: "0 lessons",
+        payments: [
+          { amount: "+$176.00 USD", lessons: "8 Lessons", date: "Jun 15, 2026", method: "PayPal Transfer", status: "Verified" },
+          { amount: "+$176.00 USD", lessons: "8 Lessons", date: "May 02, 2026", method: "PayPal Transfer", status: "Verified" }
+        ]
+      }
+    };
+
+    // Open Student Side Panel
+    function openStudentDrawer(studentId) {
+      const data = studentsData[studentId];
+      if (!data) return;
+
+      document.getElementById('drawer-name').textContent = data.name;
+      document.getElementById('drawer-email').textContent = data.email;
+      document.getElementById('drawer-avatar').textContent = data.initials;
+      document.getElementById('drawer-avatar').style.backgroundColor = data.bg;
+      document.getElementById('drawer-cefr').textContent = data.cefr;
+      document.getElementById('drawer-status-badge').textContent = data.status;
+      document.getElementById('drawer-status-badge').className = `px-2 py-0.5 rounded-full text-[10px] font-bold ${data.statusClass}`;
+      document.getElementById('drawer-target-lang').textContent = data.lang;
+      document.getElementById('drawer-goals').textContent = data.goals;
+      document.getElementById('drawer-rate').textContent = data.rate;
+      document.getElementById('drawer-balance').textContent = data.balance;
+
+      // Render payments
+      const paymentsContainer = document.getElementById('drawer-payments');
+      paymentsContainer.innerHTML = data.payments.map(p => `
+        <div class="p-3 rounded-xl bg-white border border-black/10 flex items-center justify-between shadow-2xs">
+          <div class="space-y-0.5">
+            <div class="font-bold text-black flex items-center gap-1.5">
+              <span class="font-mono text-emerald-700 font-extrabold">${p.amount}</span>
+              <span class="text-[10px] font-bold bg-neutral-100 text-black/70 px-1.5 py-0.2 rounded font-mono">${p.lessons}</span>
+            </div>
+            <div class="text-[11px] text-black/50">${p.date} • ${p.method}</div>
+          </div>
+          <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800">
+            ✓ ${p.status}
+          </span>
+        </div>
+      `).join('');
+
+      // Show drawer & backdrop
+      document.getElementById('student-drawer').classList.remove('translate-x-full');
+      document.getElementById('drawer-backdrop').classList.remove('opacity-0', 'pointer-events-none');
+    }
+
+    // Close Student Side Panel
+    function closeStudentDrawer() {
+      document.getElementById('student-drawer').classList.add('translate-x-full');
+      document.getElementById('drawer-backdrop').classList.add('opacity-0', 'pointer-events-none');
+      document.getElementById('log-payment-form').classList.add('hidden');
+    }
+
+    // Filter Active vs Archived
+    function setStudentFilter(type) {
+      const activeTab = document.getElementById('tab-active');
+      const archivedTab = document.getElementById('tab-archived');
+      const activeRows = document.querySelectorAll('.active-student');
+      const archivedRows = document.querySelectorAll('.archived-student');
+
+      if (type === 'active') {
+        activeTab.className = 'px-4 py-1.5 rounded-lg bg-white text-black font-bold text-xs shadow-xs transition-all';
+        archivedTab.className = 'px-4 py-1.5 rounded-lg text-black/60 hover:text-black font-semibold text-xs transition-all';
+        activeRows.forEach(row => row.classList.remove('hidden'));
+        archivedRows.forEach(row => row.classList.add('hidden'));
+      } else {
+        archivedTab.className = 'px-4 py-1.5 rounded-lg bg-white text-black font-bold text-xs shadow-xs transition-all';
+        activeTab.className = 'px-4 py-1.5 rounded-lg text-black/60 hover:text-black font-semibold text-xs transition-all';
+        activeRows.forEach(row => row.classList.add('hidden'));
+        archivedRows.forEach(row => {
+          row.classList.remove('hidden');
+          row.classList.add('grid');
+        });
+      }
+    }
+
+    // Search filter
+    function handleSearch(query) {
+      const q = query.toLowerCase().trim();
+      document.querySelectorAll('.student-row').forEach(row => {
+        const text = row.textContent.toLowerCase();
+        if (text.includes(q)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    // Toggle dropdowns & row menus
+    function toggleDropdown(id) {
+      const el = document.getElementById(id);
+      const isHidden = el.classList.contains('hidden');
+      document.querySelectorAll('#lang-menu, #notif-menu').forEach(m => m.classList.add('hidden'));
+      if (isHidden) el.classList.remove('hidden');
+    }
+
+    function toggleRowMenu(id) {
+      const el = document.getElementById(id);
+      const isHidden = el.classList.contains('hidden');
+      document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden'));
+      if (isHidden) el.classList.remove('hidden');
+    }
+
+    function toggleLogPaymentForm() {
+      const form = document.getElementById('log-payment-form');
+      form.classList.toggle('hidden');
+    }
+
+    function submitMockPayment() {
+      alert('✓ Logged new payment: $192.00 USD (8 lessons credited to student ledger).');
+      document.getElementById('log-payment-form').classList.add('hidden');
+      document.getElementById('drawer-balance').textContent = '11 lessons';
+    }
+
+    function promptChangePrice(name, currentPrice) {
+      const newPrice = prompt(`Update agreed lesson rate for ${name} (USD/hour):`, currentPrice);
+      if (newPrice) {
+        alert(`Agreed rate for ${name} updated to $${newPrice}.00 USD / hour.`);
+      }
+    }
+
+    function archiveStudent(name) {
+      if (confirm(`Archive ${name}? They will be hidden from the active roster while preserving all past classes and payment history.`)) {
+        alert(`${name} moved to Archived.`);
+      }
+    }
+
+    function reactivateStudent(name) {
+      alert(`Reactivated ${name} as an active student.`);
+    }
+
+    // Close on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeStudentDrawer();
+    });
+
+    // Close menus when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('header') && !e.target.closest('[id^="menu-"]')) {
+        document.querySelectorAll('#lang-menu, #notif-menu, [id^="menu-"]').forEach(m => m.classList.add('hidden'));
+      }
+    });
+  </script>
+</body>
+</html>
