@@ -78,7 +78,7 @@ To honor the project charter's *Exclusiones (Fuera de Alcance V1)* and complete 
 | **Payments** | **Manual Verification Handshake** (Off-platform PayPal / Wise / Cash) | Eliminates PCI-DSS compliance overhead, banking gateway approval delays, merchant fees, and country-specific KYC requirements. Perfectly models how independent tutors operate in practice. |
 | **Video Calls** | **Hybrid Generated & Custom URLs** (Google Meet / Zoom URL) | Leverages Google Calendar API to auto-generate native Google Meet rooms on event creation, with fallback support for manual video URLs (Zoom, Skype). Eliminates WebRTC implementation overhead while automating meeting link setup. |
 | **Calendar Sync** | **Google Calendar API (Direct Sync)** | Direct REST integration with Google Calendar API (v3) using tutor OAuth 2.0 authorization. Completely eliminates the severe 8–24 hour polling lag of static iCalendar (.ics) feeds. Enables instant push synchronization for class bookings, rescheduling, cancellations, and native calendar notifications. |
-| **Email Service** | **Transactional API** (Resend / SendGrid) | Asynchronous notifications for scheduling confirmations and payment receipts ensure users never miss critical updates, with sub-100ms dispatch latency. |
+| **Email Service** | **Transactional API (Resend)** | Modern cloud email service tailored for TypeScript/Node.js ecosystems with first-class SDK support. Dispatches asynchronous notifications for scheduling confirmations and payment receipts with sub-100ms dispatch latency while remaining 100% cost-free on the 3,000 emails/month free tier. |
 
 ---
 
@@ -96,6 +96,7 @@ To honor the project charter's *Exclusiones (Fuera de Alcance V1)* and complete 
 │ Architecture Pattern         │ Modular Monolith / DDD       │
 │ Calendar Integration         │ Google Calendar API (REST v3)│
 │ Video Hosting                │ Meet (Auto) / Custom URL     │
+│ Email Notifications          │ Resend (REST API)            │
 │ Payment Processing           │ Manual Ledger Verification   │
 │ Target Infrastructure        │ Dockerized PaaS / VPS        │
 └──────────────────────────────┴──────────────────────────────┘

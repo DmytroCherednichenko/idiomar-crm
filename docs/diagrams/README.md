@@ -122,7 +122,7 @@ flowchart TD
     subgraph ExternalServices["External Systems & Channels"]
         GoogleAuth["Google Identity Platform\n[External: Google OAuth 2.0 / OpenID Connect]\nAuthenticates students via Google Sign-In and issues ID tokens"]:::external
         GoogleCalendar["Google Calendar API\n[External: Google Calendar REST v3]\nDirectly pushes scheduled lessons, syncs updates, and generates Meet rooms"]:::external
-        EmailService["Email Service Provider\n[External: Resend / SendGrid / SMTP]\nSends booking confirmations, reminders, and notifications"]:::external
+        EmailService["Email Service Provider\n[External: Resend]\nSends booking confirmations, reminders, and notifications"]:::external
         MeetingPlatform["Video Conferencing\n[External: Google Meet / Zoom]\nThird-party video call rooms launched via external URLs"]:::external
         PaymentChannels["Payment Channels\n[External: PayPal / Wise / Banks]\nOff-platform monetary transfers executed directly by users"]:::external
     end
@@ -187,7 +187,7 @@ flowchart TD
     end
 
     Database[("PostgreSQL Database\n[Container]")]:::db
-    EmailService["Email Service (Resend / SendGrid)\n[External System]"]:::external
+    EmailService["Email Service (Resend)\n[External System]"]:::external
     GoogleCalendar["Google Calendar API (v3)\n[External System]"]:::external
     GoogleAuth["Google Identity Platform\n[External System]"]:::external
 
