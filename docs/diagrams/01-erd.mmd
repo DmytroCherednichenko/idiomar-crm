@@ -1,0 +1,88 @@
+erDiagram
+    USERS ||--o| STUDENT_PROFILES : "has"
+    USERS ||--o| TUTOR_PROFILES : "has"
+    TUTOR_PROFILES ||--o{ STUDENT_PROFILES : "mentors"
+    
+    STUDENT_PROFILES ||--o{ LESSONS : "attends"
+    TUTOR_PROFILES ||--o{ LESSONS : "conducts"
+    
+    STUDENT_PROFILES ||--o{ PAYMENTS : "submits"
+    TUTOR_PROFILES ||--o{ PAYMENTS : "verifies"
+
+    LESSONS ||--o{ HOMEWORK : "assigns"
+    LESSONS ||--o{ VOCABULARY_ITEMS : "introduces"
+    STUDENT_PROFILES ||--o{ VOCABULARY_ITEMS : "learns"
+
+    USERS {
+        uuid id PK
+        string email UK
+        string password_hash
+        string full_name
+        string role "tutor | student"
+        string timezone "IANA timezone e.g. America/Argentina/Buenos_Aires"
+        timestamp created_at
+    }
+
+    STUDENT_PROFILES {
+        uuid user_id PK, FK
+        uuid tutor_id FK
+        string target_language
+        string cefr_level "A1 to C2"
+        decimal hourly_rate "Agreed rate per lesson (supports legacy pricing)"
+        int default_payment_lessons "Default batch count e.g. 8 or 10"
+        string currency "USD, EUR, etc."
+    }
+
+    TUTOR_PROFILES {
+        uuid user_id PK, FK
+        text payment_instructions "e.g. PayPal email, bank IBAN, payment notes"
+    }
+
+    PAYMENTS {
+        uuid id PK
+        uuid student_id FK
+        uuid verified_by_tutor_id FK "nullable until verified"
+        decimal amount
+        string currency
+        int lessons_credited "e.g. 1, 5, 8, 10"
+        string payment_method "PayPal | Wise | Bank Transfer | Cash"
+        string status "pending_verification | verified | rejected"
+        text student_note "e.g. PayPal transaction reference"
+        timestamp requested_at
+        timestamp verified_at
+    }
+
+    LESSONS {
+        uuid id PK
+        uuid tutor_id FK
+        uuid student_id FK
+        timestamp start_time
+        int duration_minutes
+        string status "scheduled | completed | cancelled"
+        string meeting_url "Google Meet / Zoom external URL"
+        text lesson_summary
+    }
+
+    HOMEWORK {
+        uuid id PK
+        uuid lesson_id FK
+        uuid student_id FK
+        text title
+        text instructions
+        date due_date
+        string status "pending | submitted | reviewed"
+        text student_submission "Text or links to Google Docs/Drive"
+        text teacher_feedback
+    }
+
+    VOCABULARY_ITEMS {
+        uuid id PK
+        uuid student_id FK
+        uuid lesson_id FK "nullable if logged independently"
+        string term
+        string translation
+        text context_sentence
+        string category "e.g. grammar, travel, business"
+        string mastery_status "new | learning | mastered"
+        timestamp created_at
+    }

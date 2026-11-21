@@ -1,0 +1,59 @@
+flowchart TD
+    classDef client fill:#1168bd,stroke:#0b4884,color:#ffffff,stroke-width:2px;
+    classDef module fill:#2d74da,stroke:#1a4d99,color:#ffffff,stroke-width:2px;
+    classDef shared fill:#4a8fe7,stroke:#2b6bb8,color:#ffffff,stroke-width:2px;
+    classDef db fill:#1168bd,stroke:#0b4884,color:#ffffff,stroke-width:2px;
+    classDef external fill:#888888,stroke:#555555,color:#ffffff,stroke-width:2px;
+    classDef boundary fill:#f8f9fa,stroke:#707070,stroke-width:2px,stroke-dasharray: 5 5;
+
+    Client["Web App Frontend (Angular SPA)\n[Container]"]:::client
+
+    subgraph ModularMonolith["API Application Server (Modular Monolith) [Container: Node.js / NestJS or Express]"]
+        
+        ApiGateway["API Routing & Controllers Layer\n(Route Handlers / Auth Middleware)"]:::shared
+        
+        subgraph CoreModules["Bounded Business Modules"]
+            AuthMod["Identity & Access Module\n• Auth & JWT verification\n• User & Profile management\n• Role-based guards (Tutor vs Student)"]:::module
+            
+            PedagogicMod["Pedagogic Module\n• Glossary deck & Flashcards\n• Vocabulary mastery tracking\n• Homework assignment & review"]:::module
+            
+            SchedulingMod["Scheduling Module\n• Booking & Rescheduling\n• Timezone normalization\n• iCal / Calendar feed generator"]:::module
+            
+            BillingMod["Billing & Analytics Module\n• Payment confirmation handshake\n• Lesson credit ledger calculation\n• Tutor revenue & KPI dashboard"]:::module
+        end
+
+        subgraph SharedInfrastructure["Shared Infrastructure"]
+            NotificationMod["Notification Service\n• Dispatches transactional emails\n• Formats event templates"]:::shared
+            DataAccess["Data Access Layer\n(Prisma / Drizzle ORM)\n• Repositories & Connection Pool"]:::shared
+        end
+    end
+
+    Database[("PostgreSQL Database\n[Container]")]:::db
+    EmailService["Email Service (Resend / SendGrid)\n[External System]"]:::external
+    CalendarApp["Google Calendar / iCal\n[External System]"]:::external
+
+    %% Inbound requests
+    Client -->|"HTTPS / REST API Requests"| ApiGateway
+
+    %% Gateway to Modules
+    ApiGateway --> AuthMod
+    ApiGateway --> PedagogicMod
+    ApiGateway --> SchedulingMod
+    ApiGateway --> BillingMod
+
+    %% Cross-module domain events / interactions
+    SchedulingMod -.->|"Lesson completed event"| BillingMod
+    BillingMod -.->|"Triggers receipt email"| NotificationMod
+    SchedulingMod -.->|"Triggers booking email"| NotificationMod
+
+    %% Data layer connections
+    AuthMod --> DataAccess
+    PedagogicMod --> DataAccess
+    SchedulingMod --> DataAccess
+    BillingMod --> DataAccess
+
+    DataAccess -->|"SQL / TCP Connections"| Database
+
+    %% External outputs
+    NotificationMod -->|"HTTPS / REST"| EmailService
+    SchedulingMod -->|"iCal Feed (.ics)"| CalendarApp

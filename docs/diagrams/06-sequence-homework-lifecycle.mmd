@@ -1,0 +1,72 @@
+sequenceDiagram
+    autonumber
+    actor Tutor as Tutor (Browser)
+    participant UI as Angular SPA (Frontend)
+    participant API as API Gateway / Router
+    participant Ped as Pedagogic Module
+    participant DB as PostgreSQL Database
+    participant Notif as Notification Service
+    actor Student as Student (Browser)
+
+    %% ==========================================
+    %% PHASE 1: TUTOR ASSIGNS HOMEWORK
+    %% ==========================================
+    rect rgb(240, 248, 255)
+        note over Tutor, Student: PHASE 1: Assigning Homework
+        Tutor->>UI: Fills title, instructions, due date (attached to lesson)
+        UI->>API: POST /api/homework {lesson_id, student_id, title, instructions, due_date}
+        API->>Ped: assignHomework(dto, tutorId)
+        
+        Ped->>DB: INSERT INTO homework (status = 'pending', created_at = NOW())
+        DB-->>Ped: Homework record persisted (id: uuid)
+        
+        Ped-)Notif: emit HomeworkAssignedEvent(homeworkDetails)
+        Notif--)Student: Sends email: "New homework assigned: [Title]" with due date
+        
+        Ped-->>API: 201 Created (HomeworkDTO)
+        API-->>UI: 201 Created (JSON)
+        UI-->>Tutor: Displays assignment in Lesson details
+    end
+
+    %% ==========================================
+    %% PHASE 2: STUDENT SUBMITS HOMEWORK
+    %% ==========================================
+    rect rgb(255, 250, 240)
+        note over Tutor, Student: PHASE 2: Student Submission
+        Student->>UI: Opens Homework tab, writes answer or pastes Google Doc/Drive link
+        Student->>UI: Clicks "Submit Homework"
+        UI->>API: PUT /api/homework/{id}/submit {student_submission}
+        API->>Ped: submitHomework(id, studentId, student_submission)
+        
+        Ped->>DB: UPDATE homework SET student_submission = ..., status = 'submitted', submitted_at = NOW() WHERE id = ...
+        DB-->>Ped: Homework updated
+        
+        Ped-)Notif: emit HomeworkSubmittedEvent(studentId, homeworkId)
+        Notif--)Tutor: Dashboard alert & email: "Student submitted homework for review"
+        
+        Ped-->>API: 200 OK (HomeworkDTO)
+        API-->>UI: 200 OK (JSON)
+        UI-->>Student: Displays status "Submitted - Awaiting Review"
+    end
+
+    %% ==========================================
+    %% PHASE 3: TUTOR REVIEWS & PROVIDES FEEDBACK
+    %% ==========================================
+    rect rgb(245, 255, 245)
+        note over Tutor, Student: PHASE 3: Tutor Review & Feedback
+        Tutor->>UI: Opens Dashboard -> Clicks "Pending Homework to Correct"
+        Tutor->>UI: Reads submission, writes pedagogical feedback
+        Tutor->>UI: Clicks "Complete Review"
+        UI->>API: PATCH /api/homework/{id}/review {teacher_feedback}
+        API->>Ped: reviewHomework(id, tutorId, teacher_feedback)
+        
+        Ped->>DB: UPDATE homework SET teacher_feedback = ..., status = 'reviewed', reviewed_at = NOW() WHERE id = ...
+        DB-->>Ped: Homework updated
+        
+        Ped-)Notif: emit HomeworkReviewedEvent(studentId, homeworkId)
+        Notif--)Student: Sends email: "Your homework was reviewed with teacher feedback"
+        
+        Ped-->>API: 200 OK (ReviewedHomeworkDTO)
+        API-->>UI: 200 OK (JSON)
+        UI-->>Tutor: Dashboard updates (Pending review counter decremented)
+    end

@@ -1,0 +1,47 @@
+flowchart TD
+    %% Styling definitions
+    classDef person fill:#08427b,stroke:#052e56,color:#ffffff,stroke-width:2px;
+    classDef container fill:#1168bd,stroke:#0b4884,color:#ffffff,stroke-width:2px;
+    classDef database fill:#1168bd,stroke:#0b4884,color:#ffffff,stroke-width:2px;
+    classDef external fill:#888888,stroke:#555555,color:#ffffff,stroke-width:2px;
+    classDef boundary fill:#f9f9f9,stroke:#999999,stroke-width:2px,stroke-dasharray: 5 5;
+
+    %% Actors
+    Tutor["fa:fa-user Tutor\n[Person]\nIndependent language instructor managing classes, payments, and students"]:::person
+    Student["fa:fa-user Student\n[Person]\nLanguage learner attending lessons, reviewing vocabulary, and reporting payments"]:::person
+
+    %% External Systems Out of Scope / Third-party
+    subgraph ExternalServices["External Systems & Channels"]
+        EmailService["Email Service Provider\n[External: Resend / SendGrid / SMTP]\nSends booking confirmations, reminders, and notifications"]:::external
+        CalendarAPI["Calendar Service\n[External: Google Calendar / iCal]\nSyncs scheduled lessons via iCalendar (.ics) feeds"]:::external
+        MeetingPlatform["Video Conferencing\n[External: Google Meet / Zoom]\nThird-party video call rooms launched via external URLs"]:::external
+        PaymentChannels["Payment Channels\n[External: PayPal / Wise / Banks]\nOff-platform monetary transfers executed directly by users"]:::external
+    end
+
+    %% Main System Boundary
+    subgraph IDIOMARSystem["System Boundary: IDIOMAR (idiom.ar)"]
+        WebApp["Web Application (SPA)\n[Container: Angular / TypeScript]\nDelivers responsive UI for dashboards, glossary decks, calendar scheduling, and payment management"]:::container
+
+        ApiServer["API & Application Server\n[Container: Node.js / NestJS or Express, TypeScript]\nHandles business logic, auth/JWT verification, payment reconciliations, vocabulary search, and iCal generation"]:::container
+
+        Database[("Relational Database\n[Container: PostgreSQL]\nStores users, profiles, lessons, homework, vocabulary cards, and payment logs")]:::database
+    end
+
+    %% User Interactions
+    Tutor -->|"Views dashboard, schedules classes, confirms payments, and logs vocabulary via HTTPS"| WebApp
+    Student -->|"Views schedule, reviews glossary deck, and requests payment confirmations via HTTPS"| WebApp
+
+    %% Frontend to Backend
+    WebApp -->|"Makes API requests\n[HTTPS / JSON / REST]"| ApiServer
+
+    %% Backend to Database
+    ApiServer -->|"Reads and writes domain data\n[TCP / SQL via Prisma or Drizzle ORM]"| Database
+
+    %% Backend to External
+    ApiServer -->|"Dispatches transactional emails\n[HTTPS / REST API]"| EmailService
+    ApiServer <-->|"Serves .ics calendar subscription feeds\n[HTTPS / iCal]"| CalendarAPI
+
+    %% External Redirects / Off-platform actions
+    WebApp -.->|"Redirects / opens video room URL\n[HTTPS]"| MeetingPlatform
+    Student -.->|"Transfers funds off-platform\n[PayPal, Wise, Cash]"| PaymentChannels
+    Tutor -.->|"Checks balance / verifies incoming transfer"| PaymentChannels

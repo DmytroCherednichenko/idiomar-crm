@@ -1,0 +1,74 @@
+sequenceDiagram
+    autonumber
+    actor Tutor as Tutor (Browser)
+    participant UI as Angular SPA (Frontend)
+    participant API as API Gateway / Router
+    participant Sched as Scheduling Module
+    participant Ped as Pedagogic Module
+    participant Bill as Billing Module
+    participant DB as PostgreSQL Database
+    participant Notif as Notification Service
+    actor Student as Student (Browser/Email)
+
+    %% ==========================================
+    %% PHASE 1: SCHEDULING A LESSON
+    %% ==========================================
+    rect rgb(240, 248, 255)
+        note over Tutor, Student: PHASE 1: Scheduling a Lesson
+        Tutor->>UI: Selects Student, Date/Time, Duration & Meeting URL
+        UI->>API: POST /api/lessons {student_id, start_time, duration, meeting_url}
+        API->>Sched: scheduleLesson(dto)
+        
+        Sched->>DB: Check for schedule conflicts (time overlaps)
+        DB-->>Sched: Conflict check OK (no overlaps)
+        
+        Sched->>DB: INSERT INTO lessons (status = 'scheduled')
+        DB-->>Sched: Lesson record created (id: uuid)
+        
+        Sched-)Notif: emit LessonScheduledEvent(lessonDetails)
+        Notif--)Student: Send email notification with Google Meet/Zoom link
+        
+        Sched-->>API: 201 Created (LessonDTO)
+        API-->>UI: 201 Created (JSON)
+        UI-->>Tutor: Displays confirmed lesson on Calendar
+    end
+
+    %% ==========================================
+    %% PHASE 2: LESSON EXECUTION & COMPLETION
+    %% ==========================================
+    rect rgb(245, 255, 245)
+        note over Tutor, Student: PHASE 2: Completing Lesson & Post-Class Logging
+        Tutor->>UI: Clicks "Complete Lesson" & fills recap, new vocab words, optional homework
+        UI->>API: POST /api/lessons/{id}/complete {summary, vocab_items, homework}
+        API->>Sched: completeLesson(id, completionData)
+        
+        Sched->>DB: UPDATE lessons SET status = 'completed', summary = ... WHERE id = ...
+        DB-->>Sched: Lesson updated
+        
+        %% Step 2A: Pedagogic Logging
+        opt If new vocabulary items provided
+            Sched->>Ped: recordVocabulary(student_id, lesson_id, vocab_items)
+            Ped->>DB: INSERT INTO vocabulary_items (terms, translations, category)
+            DB-->>Ped: Vocab entries persisted
+        end
+        
+        opt If homework assigned
+            Sched->>Ped: assignHomework(lesson_id, student_id, homeworkData)
+            Ped->>DB: INSERT INTO homework (title, instructions, due_date)
+            DB-->>Ped: Homework record persisted
+        end
+
+        %% Step 2B: Balance Reconciliation
+        Sched->>Bill: emit LessonCompletedEvent(student_id, lesson_id)
+        Bill->>DB: Query verified payments vs completed lessons count
+        DB-->>Bill: Returns balance data
+        Note over Bill: Recalculates student's available prepaid lessons
+        
+        %% Step 2C: Notifications
+        Sched-)Notif: emit LessonSummaryReadyEvent(student_id, lesson_id)
+        Notif--)Student: Sends email with lesson recap & new vocabulary to review
+        
+        Sched-->>API: 200 OK (CompletedLessonDTO)
+        API-->>UI: 200 OK (JSON)
+        UI-->>Tutor: Updates Dashboard (Hours taught counter incremented)
+    end
