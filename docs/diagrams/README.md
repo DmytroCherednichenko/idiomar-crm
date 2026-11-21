@@ -26,7 +26,9 @@ erDiagram
     USERS {
         uuid id PK
         string email UK
-        string password_hash
+        string password_hash "nullable for Google OAuth"
+        string google_id UK "nullable, Google user ID"
+        string auth_provider "local | google"
         string full_name
         string role "tutor | student"
         string timezone "IANA timezone e.g. America/Argentina/Buenos_Aires"
@@ -115,6 +117,7 @@ flowchart TD
     Student["fa:fa-user Student\n[Person]\nLanguage learner attending lessons, reviewing vocabulary, and reporting payments"]:::person
 
     subgraph ExternalServices["External Systems & Channels"]
+        GoogleAuth["Google Identity Platform\n[External: Google OAuth 2.0 / OpenID Connect]\nAuthenticates students via Google Sign-In and issues ID tokens"]:::external
         EmailService["Email Service Provider\n[External: Resend / SendGrid / SMTP]\nSends booking confirmations, reminders, and notifications"]:::external
         CalendarAPI["Calendar Service\n[External: Google Calendar / iCal]\nSyncs scheduled lessons via iCalendar (.ics) feeds"]:::external
         MeetingPlatform["Video Conferencing\n[External: Google Meet / Zoom]\nThird-party video call rooms launched via external URLs"]:::external
@@ -136,7 +139,9 @@ flowchart TD
     ApiServer -->|"Reads and writes domain data\n[TCP / SQL via Prisma or Drizzle ORM]"| Database
     ApiServer -->|"Dispatches transactional emails\n[HTTPS / REST API]"| EmailService
     ApiServer <-->|"Serves .ics calendar subscription feeds\n[HTTPS / iCal]"| CalendarAPI
+    ApiServer -->|"Verifies Google ID tokens\n[HTTPS / OAuth 2.0]"| GoogleAuth
 
+    WebApp <-->|"OAuth 2.0 / Google Sign-In flow\n[HTTPS]"| GoogleAuth
     WebApp -.->|"Redirects / opens video room URL\n[HTTPS]"| MeetingPlatform
     Student -.->|"Transfers funds off-platform\n[PayPal, Wise, Cash]"| PaymentChannels
     Tutor -.->|"Checks balance / verifies incoming transfer"| PaymentChannels
@@ -163,7 +168,7 @@ flowchart TD
         ApiGateway["API Routing & Controllers Layer\n(Route Handlers / Auth Middleware)"]:::shared
         
         subgraph CoreModules["Bounded Business Modules"]
-            AuthMod["Identity & Access Module\n• Auth & JWT verification\n• User & Profile management\n• Role-based guards (Tutor vs Student)"]:::module
+            AuthMod["Identity & Access Module\n• Auth & JWT verification\n• Google OAuth token verification\n• User & Profile management\n• Role-based guards (Tutor vs Student)"]:::module
             
             PedagogicMod["Pedagogic Module\n• Glossary deck & Flashcards\n• Vocabulary mastery tracking\n• Homework assignment & review"]:::module
             
@@ -181,6 +186,7 @@ flowchart TD
     Database[("PostgreSQL Database\n[Container]")]:::db
     EmailService["Email Service (Resend / SendGrid)\n[External System]"]:::external
     CalendarApp["Google Calendar / iCal\n[External System]"]:::external
+    GoogleAuth["Google Identity Platform\n[External System]"]:::external
 
     Client -->|"HTTPS / REST API Requests"| ApiGateway
 
@@ -202,6 +208,7 @@ flowchart TD
 
     NotificationMod -->|"HTTPS / REST"| EmailService
     SchedulingMod -->|"iCal Feed (.ics)"| CalendarApp
+    AuthMod -->|"Verifies ID tokens\n[HTTPS / OAuth 2.0]"| GoogleAuth
 ```
 
 ---

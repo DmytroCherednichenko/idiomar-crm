@@ -13,7 +13,7 @@ flowchart TD
         ApiGateway["API Routing & Controllers Layer\n(Route Handlers / Auth Middleware)"]:::shared
         
         subgraph CoreModules["Bounded Business Modules"]
-            AuthMod["Identity & Access Module\n• Auth & JWT verification\n• User & Profile management\n• Role-based guards (Tutor vs Student)"]:::module
+            AuthMod["Identity & Access Module\n• Auth & JWT verification\n• Google OAuth token verification\n• User & Profile management\n• Role-based guards (Tutor vs Student)"]:::module
             
             PedagogicMod["Pedagogic Module\n• Glossary deck & Flashcards\n• Vocabulary mastery tracking\n• Homework assignment & review"]:::module
             
@@ -31,6 +31,7 @@ flowchart TD
     Database[("PostgreSQL Database\n[Container]")]:::db
     EmailService["Email Service (Resend / SendGrid)\n[External System]"]:::external
     CalendarApp["Google Calendar / iCal\n[External System]"]:::external
+    GoogleAuth["Google Identity Platform\n[External System]"]:::external
 
     %% Inbound requests
     Client -->|"HTTPS / REST API Requests"| ApiGateway
@@ -57,3 +58,4 @@ flowchart TD
     %% External outputs
     NotificationMod -->|"HTTPS / REST"| EmailService
     SchedulingMod -->|"iCal Feed (.ics)"| CalendarApp
+    AuthMod -->|"Verifies ID tokens\n[HTTPS / OAuth 2.0]"| GoogleAuth

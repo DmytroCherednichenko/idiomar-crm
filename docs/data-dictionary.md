@@ -9,6 +9,7 @@ This document provides the complete data dictionary for the relational database 
 | Enum Type / Check Constraint | Allowed Values | Description |
 | :--- | :--- | :--- |
 | `user_role` | `'tutor'`, `'student'` | Role assigned to user for authorization guards |
+| `auth_provider` | `'local'`, `'google'` | Authentication identity provider for user credentials |
 | `cefr_level` | `'A1'`, `'A2'`, `'B1'`, `'B2'`, `'C1'`, `'C2'` | Common European Framework of Reference for Languages |
 | `lesson_status` | `'scheduled'`, `'completed'`, `'cancelled'`, `'rescheduled'` | Lifecycle status of a booked lesson |
 | `homework_status` | `'pending'`, `'submitted'`, `'reviewed'` | Progression status of an assigned homework |
@@ -20,13 +21,15 @@ This document provides the complete data dictionary for the relational database 
 ## 2. Table Specifications
 
 ### 2.1 Table: `users`
-**Description:** Central identity table storing authentication credentials, basic contact information, role, and timezone preferences.
+**Description:** Central identity table storing authentication credentials, basic contact information, role, and timezone preferences. Supports both local password authentication and Google OAuth sign-in.
 
 | Column Name | Data Type | Nullable | Constraints | Default | Description / Business Rules |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `id` | `UUID` | No | `PRIMARY KEY` | `gen_random_uuid()` | Unique identifier for each user |
 | `email` | `VARCHAR(255)` | No | `UNIQUE`, valid email | None | Login credential; must be unique across system |
-| `password_hash` | `VARCHAR(255)` | No | None | None | Bcrypt or Argon2 hashed password |
+| `password_hash` | `VARCHAR(255)` | Yes | None | `NULL` | Bcrypt or Argon2 hashed password (nullable for students/users logging in via Google) |
+| `google_id` | `VARCHAR(255)` | Yes | `UNIQUE` | `NULL` | Google's unique user ID (`sub`); null for password/local accounts |
+| `auth_provider` | `VARCHAR(20)` | No | `CHECK (auth_provider IN ('local', 'google'))` | `'local'` | Authentication method / identity provider (`'local'` or `'google'`) |
 | `full_name` | `VARCHAR(150)` | No | None | None | Display name of the user |
 | `role` | `VARCHAR(20)` | No | `CHECK (role IN ('tutor', 'student'))` | `'student'` | Distinguishes between tutor and student |
 | `timezone` | `VARCHAR(50)` | No | Valid IANA timezone | `'UTC'` | Timezone identifier (e.g. `'America/Argentina/Buenos_Aires'`) used for calendar rendering |

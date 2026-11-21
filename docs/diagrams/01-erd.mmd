@@ -16,7 +16,9 @@ erDiagram
     USERS {
         uuid id PK
         string email UK
-        string password_hash
+        string password_hash "nullable for Google OAuth"
+        string google_id UK "nullable, Google user ID"
+        string auth_provider "local | google"
         string full_name
         string role "tutor | student"
         string timezone "IANA timezone e.g. America/Argentina/Buenos_Aires"
