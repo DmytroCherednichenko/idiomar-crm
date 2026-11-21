@@ -13,7 +13,7 @@ flowchart TD
     %% External Systems Out of Scope / Third-party
     subgraph ExternalServices["External Systems & Channels"]
         GoogleAuth["Google Identity Platform\n[External: Google OAuth 2.0 / OpenID Connect]\nAuthenticates students via Google Sign-In and issues ID tokens"]:::external
-        GoogleCalendar["Google Calendar API\n[External: Google Calendar REST v3]\nDirectly pushes scheduled lessons, syncs updates, and generates Meet rooms"]:::external
+        GoogleCalendar["Google Calendar API\n[External: Google Calendar REST v3]\nReceives one-way CRM lesson pushes; provides read-only FreeBusy availability"]:::external
         EmailService["Email Service Provider\n[External: Resend]\nSends booking confirmations, reminders, and notifications"]:::external
         MeetingPlatform["Video Conferencing\n[External: Google Meet / Zoom]\nThird-party video call rooms launched via external URLs"]:::external
         PaymentChannels["Payment Channels\n[External: PayPal / Wise / Banks]\nOff-platform monetary transfers executed directly by users"]:::external
@@ -21,7 +21,7 @@ flowchart TD
 
     %% Main System Boundary
     subgraph IDIOMARSystem["System Boundary: IDIOMAR (idiom.ar)"]
-        WebApp["Web Application (SPA)\n[Container: Angular / TypeScript]\nDelivers responsive UI for dashboards, glossary decks, calendar scheduling, and payment management"]:::container
+        WebApp["Web Application (SPA)\n[Container: Angular / TypeScript, FullCalendar Angular]\nDelivers responsive UI for dashboards, glossary decks, lesson scheduling, Google FreeBusy availability overlay, and payment management"]:::container
 
         ApiServer["API & Application Server\n[Container: Node.js / NestJS or Express, TypeScript]\nHandles business logic, auth/JWT verification, Google Calendar synchronization, payment reconciliations, and vocabulary search"]:::container
 
@@ -40,7 +40,8 @@ flowchart TD
 
     %% Backend to External
     ApiServer -->|"Dispatches transactional emails\n[HTTPS / REST API]"| EmailService
-    ApiServer -->|"Directly pushes lesson events & Meet links\n[HTTPS / REST API v3]"| GoogleCalendar
+    ApiServer -->|"One-way push of CRM-owned lesson events & Meet links\n[HTTPS / REST API v3]"| GoogleCalendar
+    GoogleCalendar -->|"Read-only FreeBusy windows for the CRM availability overlay\n[Google Calendar FreeBusy API]"| ApiServer
     ApiServer -->|"Verifies Google ID tokens & OAuth tokens\n[HTTPS / OAuth 2.0]"| GoogleAuth
 
     %% External Redirects / Off-platform actions
