@@ -424,3 +424,94 @@ sequenceDiagram
         UI-->>Tutor: Dashboard updates (Pending review counter decremented)
     end
 ```
+
+---
+
+## 7. Proposed UML Sequence Diagram: Lesson Charges & Payment Allocation
+
+This is a proposed alternative to the current lesson-credit balance model shown in diagrams 04 and 05. **Completing a billable lesson creates its charge; a payment does not create a charge.** A verified payment is allocated to existing charges, and any excess remains as unallocated student credit. The current ERD and data dictionary have not yet been changed to this proposed model.
+
+File: [07-sequence-charge-payment-allocation.mmd](./07-sequence-charge-payment-allocation.mmd)
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Tutor as Tutor (Browser)
+    participant UI as Angular SPA (Frontend)
+    participant API as API Gateway / Router
+    participant Sched as Scheduling Module
+    participant Bill as Billing Module
+    participant DB as PostgreSQL Database
+    participant Notif as Notification Service
+    actor Student as Student (Browser/Email)
+
+    rect rgb(245, 255, 245)
+        note over Tutor, Student: PHASE 1: Complete a Lesson and Create Its Charge
+        Tutor->>UI: Marks lesson complete and submits recap
+        UI->>API: POST /api/lessons/{id}/complete {summary, vocab_items, homework}
+        API->>Sched: completeLesson(id, completionData)
+        Sched->>DB: BEGIN transaction; lock lesson; confirm it is scheduled
+        DB-->>Sched: Lesson is eligible for completion
+        Sched->>DB: UPDATE lesson status = 'completed' and save recap
+        Sched->>Bill: createCharge(lesson, effectiveRate, currency)
+        Bill->>DB: INSERT charge (lesson_id, student_id, amount_due, currency)
+        Note over Bill, DB: One immutable charge per completed billable lesson; snapshot the rate and currency
+        Bill->>DB: Lock student billing record; allocate existing verified, unallocated funds in same currency to oldest open charges
+        DB-->>Bill: Return charge amount paid and remaining amount
+        Bill->>DB: COMMIT transaction
+        Sched-->>API: 200 OK (CompletedLessonDTO, charge summary)
+        API-->>UI: 200 OK (JSON)
+        UI-->>Tutor: Shows lesson lifecycle and separate payment badge
+        Sched-)Notif: emit LessonSummaryReadyEvent(studentId, lessonId)
+        Notif--)Student: Sends lesson recap and new vocabulary
+    end
+
+    rect rgb(240, 248, 255)
+        note over Student, Tutor: PHASE 2: Report, Verify, and Allocate a Payment
+        Note over Student: Student sends money off-platform (e.g. PayPal, Wise, Bank)
+        Student->>UI: Reports payment amount, currency, method, and optional note
+        UI->>API: POST /api/payments/request {reportedAmount, currency, payment_method, student_note}
+        API->>Bill: requestPayment(dto, studentId)
+        Bill->>DB: INSERT payment (status = 'pending_verification')
+        DB-->>Bill: Payment record created
+        Bill-)Notif: emit PaymentRequestedEvent(paymentDetails)
+        Notif--)Tutor: Alerts tutor to verify the payment
+        Bill-->>API: 201 Created (PaymentDTO)
+        API-->>UI: 201 Created (JSON)
+        UI-->>Student: Displays pending-verification state
+
+        Tutor->>UI: Verifies the funds actually received
+        UI->>API: PATCH /api/payments/{id}/verify {verifiedAmount}
+        API->>Bill: verifyPayment(id, tutorId, verifiedAmount)
+        Bill->>DB: BEGIN transaction; lock student billing record, payment, and relevant open charges
+        Bill->>DB: Mark payment verified with verified_amount and verifier
+        Bill->>DB: Allocate verified amount to oldest open charges in the same currency
+        Note over Bill, DB: A payment may settle multiple charges; a charge may be settled by multiple payments
+        alt Payment covers a charge in full
+            DB-->>Bill: Charge becomes paid; continue to next oldest open charge
+        else Payment partially covers a charge
+            DB-->>Bill: Charge remains partially paid with an outstanding amount
+        else Verified payment exceeds current open charges
+            DB-->>Bill: Remaining amount stays as unallocated student credit
+        end
+        Bill->>DB: COMMIT transaction
+        Bill-)Notif: emit PaymentVerifiedEvent(paymentId, allocations, remainingCredit)
+        Notif--)Student: Sends receipt, allocations, and any remaining credit
+        Bill-->>API: 200 OK (VerifiedPaymentDTO)
+        API-->>UI: 200 OK (JSON)
+        UI-->>Tutor: Shows updated charge balances and payment history
+    end
+```
+
+### Changes Needed to Implement the Proposed Model
+
+1. **Add a `charges` table.** Create one charge for each billable completed lesson, with a unique `lesson_id`, `student_id`, `amount_due`, `currency`, and creation timestamp. Store the final amount and currency at charge creation so later rate changes do not rewrite history. Derive outstanding amount as `amount_due - SUM(payment_allocations.amount_applied)`; a stored charge status is optional and should not be the source of truth.
+2. **Add a `payment_allocations` table.** Link verified payments to charges with `payment_id`, `charge_id`, `amount_applied`, and `allocated_at`. This many-to-many link supports partial payments and payments covering multiple lessons. Validate positive allocations and ensure currencies match.
+3. **Change `payments`.** Keep `reported_amount` (what the student says they sent) separately from `verified_amount` (what the tutor confirms was received), plus currency, method, status, and verification audit fields. Allocate only `verified_amount`. Remove `lessons_credited`; it no longer describes the ledger. Unallocated credit is the verified payment amount less its allocations.
+4. **Update lesson completion.** In one transaction, complete the lesson, create exactly one charge, and apply any existing same-currency unallocated credit. Make completion idempotent and enforce one charge per lesson.
+5. **Update payment verification.** In one transaction, verify the actual received amount and allocate it FIFO (oldest outstanding charge first), allowing partial settlement. Keep any excess as unallocated credit for future charges. Serialize billing updates per student and lock affected records to prevent concurrent completions or verifications from allocating the same funds twice.
+6. **Revise billing queries and UI.** Calculate outstanding amounts per charge and available unallocated credit per student. Show a completed lesson as unpaid, partially paid, or paid based on its charge allocation, independently of lesson lifecycle status.
+7. **Plan legacy data migration.** Existing payments record `lessons_credited`, and old lessons lack historical charge amounts. A reliable migration needs a chosen rate-history assumption or manual reconciliation; the current data cannot always reveal which old lessons a payment covered or what each cost.
+8. **Define exceptional billing rules.** Decide how to handle canceled/late-canceled lessons, refunds, payment corrections, and charge corrections. Preserve an audit trail rather than silently editing or deleting financial history.
+
+The existing data dictionary and ERD describe the current credit-count model and should be revised only after this proposed workflow and its migration rules are approved.
