@@ -12,7 +12,7 @@ This document provides the complete data dictionary for the relational database 
 | `auth_provider` | `'local'`, `'google'` | Authentication identity provider for user credentials |
 | `student_status` | `'active'`, `'archived'` | Lifecycle state of a student profile (active learner vs. archived) |
 | `cefr_level` | `'A1'`, `'A2'`, `'B1'`, `'B2'`, `'C1'`, `'C2'` | Common European Framework of Reference for Languages |
-| `lesson_status` | `'scheduled'`, `'completed'`, `'cancelled'`, `'rescheduled'` | Lifecycle status of a booked lesson |
+| `lesson_status` | `'scheduled'`, `'completed'`, `'canceled'` | Lifecycle status of a booked lesson |
 | `homework_status` | `'pending'`, `'submitted'`, `'reviewed'` | Progression status of an assigned homework |
 | `payment_status` | `'pending_verification'`, `'verified'`, `'rejected'` | Handshake state between student payment and tutor review |
 | `mastery_status` | `'new'`, `'learning'`, `'mastered'` | Learning retention level in the Glossary Deck |
@@ -72,7 +72,7 @@ This document provides the complete data dictionary for the relational database 
 ---
 
 ### 2.4 Table: `lessons`
-**Description:** Record of scheduled, completed, and cancelled language classes.
+**Description:** Record of scheduled, completed, and canceled language classes.
 
 | Column Name | Data Type | Nullable | Constraints | Default | Description / Business Rules |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -81,7 +81,7 @@ This document provides the complete data dictionary for the relational database 
 | `student_id` | `UUID` | No | `FK -> student_profiles(user_id) ON DELETE CASCADE` | None | Student attending the session |
 | `start_time` | `TIMESTAMPTZ` | No | None | None | Session start timestamp stored in UTC |
 | `duration_minutes` | `INT` | No | `CHECK (duration_minutes IN (30, 45, 60, 90, 120))` | `60` | Class duration in minutes |
-| `status` | `VARCHAR(20)` | No | `CHECK (status IN ('scheduled','completed','cancelled','rescheduled'))` | `'scheduled'` | Current operational status |
+| `status` | `VARCHAR(20)` | No | `CHECK (status IN ('scheduled','completed','canceled'))` | `'scheduled'` | Current operational status |
 | `meeting_url` | `VARCHAR(500)` | Yes | Valid URL | `NULL` | External video call room (Google Meet generated via Calendar API, or Zoom link) |
 | `google_event_id` | `VARCHAR(255)` | Yes | None | `NULL` | Google Calendar event ID for direct synchronization, updates, and cancellations |
 | `lesson_summary` | `TEXT` | Yes | None | `NULL` | Pedagogical notes and recap logged by tutor after class |

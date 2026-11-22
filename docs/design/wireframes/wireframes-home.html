@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IDIOMAR — Teacher UI Wireframe (Home View)</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-[#E9E3DF] text-[#000000] antialiased min-h-screen selection:bg-[#FF7A30] selection:text-white">
+
+  <header class="sticky top-0 z-40 bg-white border-b border-black/10 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-3 shrink-0">
+          <div class="w-9 h-9">
+            <svg viewBox="0 0 100 100" class="w-full h-full" fill="none" aria-hidden="true">
+              <g stroke-linejoin="round" stroke-linecap="round">
+                <polygon points="48.5,9 48.5,46.5 29,28.5" fill="#FF7A30" stroke="#FF7A30" stroke-width="1" transform="translate(-0.6 -0.6)" />
+                <polygon points="51.5,9 71,28.5 51.5,46.5" fill="#FF7A30" stroke="#FF7A30" stroke-width="1" transform="translate(0.6 -0.6)" />
+                <polygon points="27,30.5 46.5,48.5 9,48.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(-1 -0.6)" />
+                <polygon points="9,51.5 46.5,51.5 27,69.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(-1 0.6)" />
+                <polygon points="73,30.5 91,48.5 53.5,48.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(1 -0.6)" />
+                <polygon points="53.5,51.5 91,51.5 73,69.5" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(1 0.6)" />
+                <polygon points="29,71.5 48.5,53.5 48.5,91" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(-0.6 1)" />
+                <polygon points="51.5,53.5 71,71.5 51.5,91" fill="#000000" stroke="#000000" stroke-width="1" transform="translate(0.6 1)" />
+              </g>
+            </svg>
+          </div>
+          <a href="wireframes-home.html" class="flex items-baseline tracking-tight" aria-label="idiomar home">
+            <span class="text-2xl font-extrabold text-black">idiom</span>
+            <span class="text-2xl font-extrabold text-[#FF7A30]">ar</span>
+          </a>
+        </div>
+
+        <nav class="hidden md:flex items-center h-full gap-2" aria-label="Main navigation">
+          <a href="wireframes-home.html" aria-current="page" class="relative h-full flex items-center px-4 text-sm font-bold text-black border-b-[3px] border-[#FF7A30] -mb-[1px]">
+            Home
+          </a>
+          <a href="#" class="h-full flex items-center px-4 text-sm font-semibold text-black/60 hover:text-black transition-colors">
+            Calendar
+          </a>
+          <a href="wireframes-students.html" class="h-full flex items-center px-4 text-sm font-semibold text-black/60 hover:text-black transition-colors">
+            Students
+          </a>
+          <a href="wireframes-lessons.html" class="h-full flex items-center px-4 text-sm font-semibold text-black/60 hover:text-black transition-colors">
+            Lessons
+          </a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <button type="button" onclick="toggleDropdown('lang-menu')" aria-expanded="false" aria-controls="lang-menu" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-black/15 bg-white text-xs font-semibold text-black hover:bg-neutral-50 transition-colors shadow-2xs">
+              <span class="text-sm">🇺🇸</span>
+              <span class="hidden sm:inline">English (US)</span>
+              <svg class="w-3.5 h-3.5 text-black/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div id="lang-menu" class="hidden absolute right-0 mt-1 w-44 bg-white rounded-xl shadow-lg border border-black/10 py-1.5 z-50 text-xs">
+              <a href="#" class="flex items-center gap-2 px-3 py-2 font-bold text-[#465C88] bg-[#465C88]/10">
+                <span>🇺🇸</span><span>English (US)</span>
+              </a>
+              <a href="#" class="flex items-center gap-2 px-3 py-2 font-medium text-black/80 hover:bg-black/5">
+                <span>🇦🇷</span><span>Spanish (Arg)</span>
+              </a>
+              <a href="#" class="flex items-center gap-2 px-3 py-2 font-medium text-black/80 hover:bg-black/5">
+                <span>🇺🇦</span><span>Ukrainian</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="relative">
+            <button type="button" onclick="toggleDropdown('notif-menu')" aria-label="Notifications" aria-expanded="false" aria-controls="notif-menu" class="relative p-2 rounded-lg text-black/70 hover:text-black hover:bg-black/5 transition-colors">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#FF7A30] ring-2 ring-white" aria-label="Unread notification"></span>
+            </button>
+            <div id="notif-menu" class="hidden absolute right-0 mt-1 w-72 bg-white rounded-xl shadow-xl border border-black/10 p-3 z-50 text-xs space-y-2">
+              <div class="font-bold text-black border-b border-black/10 pb-1.5 flex justify-between items-center">
+                <span>Notifications</span>
+                <span class="text-[10px] text-[#FF7A30] font-semibold">1 new</span>
+              </div>
+              <div class="p-2 rounded-lg bg-[#E9E3DF]/50">
+                <span class="font-bold text-black block">Sofia Morales</span>
+                <span class="text-black/70">Submitted Homework: "Subjunctive Essay"</span>
+                <span class="text-[10px] text-black/40 block mt-0.5">25 mins ago</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 pl-2 border-l border-black/10">
+            <div class="relative">
+              <div class="w-9 h-9 rounded-full overflow-hidden ring-2 ring-[#465C88]/20 bg-[#465C88] flex items-center justify-center text-white font-bold text-sm shadow-2xs">
+                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80" alt="Prof. Camila Rossi" class="w-full h-full object-cover">
+              </div>
+              <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-white rounded-full p-0.5 shadow-xs flex items-center justify-center" title="Logged in with Google">
+                <svg viewBox="0 0 24 24" class="w-3 h-3" aria-hidden="true">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+              </span>
+            </div>
+            <div class="hidden xl:block text-left text-xs leading-tight">
+              <div class="font-bold text-black">Prof. Camila Rossi</div>
+              <div class="text-[10px] text-black/50 font-medium">Language Tutor</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-10 space-y-6">
+    <section aria-labelledby="welcome-heading">
+      <div>
+        <p class="text-sm font-semibold text-[#465C88] mb-2">Your teaching dashboard</p>
+        <h1 id="welcome-heading" class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+          Good evening, Camila!
+        </h1>
+        <p class="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-black/60">
+          Every lesson opens a door. Thank you for helping your students discover where their words can take them.
+        </p>
+      </div>
+    </section>
+
+    <section aria-labelledby="next-class-heading" class="relative overflow-hidden bg-white rounded-2xl border border-black/5 shadow-xs">
+      <div class="absolute inset-y-0 left-0 w-1.5 bg-[#FF7A30]" aria-hidden="true"></div>
+      <div class="p-5 sm:p-7 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-2 mb-3">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FF7A30]/10 text-[#B94E0C] text-[11px] font-bold uppercase tracking-wide">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#FF7A30]"></span>
+              Up next
+            </span>
+            <span class="text-xs font-semibold text-black/45">Today · 6:30 PM ART</span>
+          </div>
+          <h2 id="next-class-heading" class="text-xl sm:text-2xl font-bold tracking-tight">Spanish</h2>
+          <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-black/60">
+            <span class="inline-flex items-center gap-1.5">
+              <span class="w-6 h-6 rounded-full bg-[#465C88] text-white flex items-center justify-center font-bold text-[9px]">SM</span>
+              Sofia Morales
+            </span>
+            <span>60 minutes</span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between md:justify-end gap-4 md:gap-6 shrink-0">
+          <div class="text-left md:text-right">
+            <p class="text-[10px] font-bold uppercase tracking-wider text-black/40">Starts in</p>
+            <p class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#465C88]">24 min</p>
+          </div>
+          <a href="wireframes-lessons.html" class="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#FF7A30] hover:bg-[#e86b24] text-black font-bold text-sm shadow-sm transition-colors">
+            Open lesson
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7-7 7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="overview-heading" class="space-y-4">
+      <div class="flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <p class="text-[11px] font-bold uppercase tracking-wider text-black/40">Your progress</p>
+          <h2 id="overview-heading" class="mt-1 text-xl sm:text-2xl font-bold tracking-tight">Teaching at a glance</h2>
+        </div>
+        <p class="text-xs font-medium text-black/45">All-time overview</p>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
+        <article class="bg-white rounded-2xl p-4 sm:p-5 border border-black/5 shadow-xs">
+          <div class="w-9 h-9 rounded-xl bg-[#465C88]/10 text-[#465C88] flex items-center justify-center mb-4" aria-hidden="true">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <circle cx="12" cy="12" r="9" stroke-width="1.8" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 7v5l3 2" />
+            </svg>
+          </div>
+          <p class="text-xs font-semibold text-black/50">Hours taught</p>
+          <p class="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight">486<span class="text-base font-bold text-black/40">.5</span></p>
+          <p class="mt-1 text-[11px] text-black/40">Time spent teaching</p>
+        </article>
+
+        <article class="bg-white rounded-2xl p-4 sm:p-5 border border-black/5 shadow-xs">
+          <div class="w-9 h-9 rounded-xl bg-[#FF7A30]/10 text-[#D65E1B] flex items-center justify-center mb-4" aria-hidden="true">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 4.75A1.75 1.75 0 016.75 3H20v15H6.75A1.75 1.75 0 005 19.75v-15zM5 19.75A1.75 1.75 0 016.75 18H20M8 7h8M8 10h8" />
+            </svg>
+          </div>
+          <p class="text-xs font-semibold text-black/50">Lessons taught</p>
+          <p class="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight">372</p>
+          <p class="mt-1 text-[11px] text-black/40">Classes completed</p>
+        </article>
+
+        <article class="bg-white rounded-2xl p-4 sm:p-5 border border-black/5 shadow-xs">
+          <div class="w-9 h-9 rounded-xl bg-[#465C88]/10 text-[#465C88] flex items-center justify-center mb-4" aria-hidden="true">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 20v-1.5a3.5 3.5 0 00-3.5-3.5h-5A3.5 3.5 0 004 18.5V20m6-8a4 4 0 100-8 4 4 0 000 8zm7-7.5a4 4 0 010 7.75M20 20v-1.5a3.5 3.5 0 00-2.5-3.35" />
+            </svg>
+          </div>
+          <p class="text-xs font-semibold text-black/50">Total students</p>
+          <p class="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight">18</p>
+          <p class="mt-1 text-[11px] text-black/40">Across your roster</p>
+        </article>
+
+        <article class="bg-white rounded-2xl p-4 sm:p-5 border border-black/5 shadow-xs">
+          <div class="w-9 h-9 rounded-xl bg-[#FF7A30]/10 text-[#D65E1B] flex items-center justify-center mb-4" aria-hidden="true">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <rect x="3.5" y="5" width="17" height="15.5" rx="2" stroke-width="1.8" />
+              <path stroke-linecap="round" stroke-width="1.8" d="M7.5 3.5v3M16.5 3.5v3M3.5 9.5h17" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 14l2 2 4-4" />
+            </svg>
+          </div>
+          <p class="text-xs font-semibold text-black/50">Days on idiomar</p>
+          <p class="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight">214</p>
+          <p class="mt-1 text-[11px] text-black/40">Your teaching streak</p>
+        </article>
+
+        <article class="col-span-2 sm:col-span-1 bg-white rounded-2xl p-4 sm:p-5 border border-black/5 shadow-xs">
+          <div class="w-9 h-9 rounded-xl bg-[#465C88]/10 text-[#465C88] flex items-center justify-center mb-4" aria-hidden="true">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3v18m4-13.5c0-1.38-1.79-2.5-4-2.5s-4 1.12-4 2.5 1.79 2.5 4 2.5 4 1.12 4 2.5-1.79 2.5-4 2.5-4-1.12-4-2.5" />
+            </svg>
+          </div>
+          <p class="text-xs font-semibold text-black/50">Total earnings</p>
+          <p class="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight">$8,640</p>
+          <p class="mt-1 text-[11px] text-black/40">USD · all time</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function toggleDropdown(id) {
+      const menu = document.getElementById(id);
+      const isHidden = menu.classList.contains('hidden');
+      document.querySelectorAll('#lang-menu, #notif-menu').forEach(item => item.classList.add('hidden'));
+      if (isHidden) menu.classList.remove('hidden');
+    }
+
+    document.addEventListener('click', event => {
+      if (!event.target.closest('header')) {
+        document.querySelectorAll('#lang-menu, #notif-menu').forEach(menu => menu.classList.add('hidden'));
+      }
+    });
+  </script>
+</body>
+</html>

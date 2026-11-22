@@ -2,6 +2,9 @@
 
 **Module 1:** Teacher Dashboard — Lessons & Pedagogic View: [wireframes-lessons.html](file:///Users/dima/Documents/Programming/idiomar-crm/docs/design/wireframes/wireframes-lessons.html)  
 **Module 2:** Teacher Dashboard — Students Roster & Billing View: [wireframes-students.html](file:///Users/dima/Documents/Programming/idiomar-crm/docs/design/wireframes/wireframes-students.html)  
+
+**Module 3:** Teacher Dashboard — Home & Overview View: [wireframes-home.html](file:///Users/dima/Documents/Programming/idiomar-crm/docs/design/wireframes/wireframes-home.html)
+
 **Design System Reference:** [brand-guidelines.md](file:///Users/dima/Documents/Programming/idiomar-crm/docs/design/brand/brand-guidelines.md) | [branding-sheet.html](file:///Users/dima/Documents/Programming/idiomar-crm/docs/design/brand/branding-sheet.html)
 
 ---
@@ -23,7 +26,7 @@
    * **`Home`**, **`Calendar`**, **`Students`**, and **`Lessons`**.
    * **Active State (`Lessons`):** Underlined with a crisp Valencia Flame (`#FF7A30`) stripe along the bottom border, paired with bold typography (orange dot removed).
 3. **Utility Controls (Right):**
-   * **Language Selector (`[🇺🇸 English (US) ▾]`):** Dropdown initially supporting **`English (US)`** and **`Español (LatAm)`** (German removed).
+   * **Language Selector (`[🇺🇸 English (US) ▾]`):** Dropdown supporting **`English (US)`**, **`Spanish (Arg)`**, and **`Ukrainian`**.
    * **Notification Center (`[🔔]`):** Bell icon with a subtle Valencia Flame (`#FF7A30`) unread badge for homework submissions.
    * **Teacher Profile Avatar (Prof. Camila Rossi):** Circular profile image with a Google OAuth badge indicating verified login status.
 
@@ -65,14 +68,13 @@ Cards prioritize pedagogical clarity—lesson content, homework progress, and di
 └────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Simplified Status Lifecycle:
-* **Future Lessons:** Marked strictly as **`Scheduled`** (never marked as "paid" or "deducted").
-* **Past Lessons:** Display one of three clean states:
-  1. **`Waiting for payment`:** Amber status highlighting recent completed classes awaiting payment (no spinners, intrusive reference codes, or clutter).
-  2. **`Confirmed`:** Reassuring green badge (`✓ Confirmed`) confirming settled sessions.
-  3. **`Canceled`:** Muted neutral status for sessions canceled by tutor or student.
-
-* **Unified Action Button:** All completed lessons feature the consistent pedagogical button **`[Recap & Words]`**, enabling the teacher to review summaries and flashcards at any time regardless of payment status. (Payments update to "Confirmed" automatically once settled).
+### Lesson Status & Payment Badges:
+* **Lesson lifecycle statuses:** **`Scheduled`**, **`Completed`**, and **`Canceled`**. Payment does not change a lesson's lifecycle status.
+* **Payment badges:** Completed lessons may display one of two separate billing badges:
+  1. **`Waiting for payment`:** Amber badge for a completed lesson not covered by verified payment credits.
+  2. **`Paid`:** Reassuring green badge for a completed lesson covered by verified payment credits.
+* Only verified payments count toward a student's lesson-credit balance. The current data model calculates that balance per student and does not define how pooled credits are allocated to individual lessons, so per-lesson payment badges require an allocation rule.
+* **Unified Action Button:** All completed lessons feature the consistent pedagogical button **`[Recap & Words]`**, enabling the teacher to review summaries and flashcards at any time regardless of payment status.
 
 ---
 

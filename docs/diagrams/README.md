@@ -73,7 +73,7 @@ erDiagram
         uuid student_id FK
         timestamp start_time
         int duration_minutes
-        string status "scheduled | completed | cancelled"
+        string status "scheduled | completed | canceled"
         string meeting_url "Google Meet / Zoom external URL"
         string google_event_id "nullable, Google Calendar event identifier"
         text lesson_summary
