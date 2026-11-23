@@ -21,8 +21,8 @@ idiomar-crm/
 │   │   ├── 02-c4-level2-containers.mmd # C4 Level 2 Container Diagram
 │   │   ├── 03-c4-level3-components.mmd # C4 Level 3 Component Diagram
 │   │   ├── 04-sequence-lesson-lifecycle.mmd     # Scheduling & completion flow
-│   │   ├── 06-sequence-homework-lifecycle.mmd   # Homework assign & feedback flow
-│   │   └── 07-sequence-charge-payment-allocation.mmd # Lesson charges & optional payment reporting
+│   │   ├── 05-sequence-homework-lifecycle.mmd   # Homework assign & feedback flow
+│   │   └── 06-sequence-charge-payment-allocation.mmd # Lesson charges & optional payment reporting
 │   │
 │   └── design/
 │       ├── brand/                    # Visual brand identity system
@@ -33,6 +33,7 @@ idiomar-crm/
 │       │
 │       └── wireframes/               # UX/UI interface prototypes
 │           ├── wireframes.md         # Wireframe specifications & component anatomy
+│           ├── wireframes-home.html  # Interactive home/dashboard wireframe
 │           ├── wireframes-lessons.html  # Interactive teacher lessons & homework wireframe
 │           └── wireframes-students.html # Interactive students roster & payment history wireframe
 ```
@@ -45,5 +46,6 @@ idiomar-crm/
 * 🗄️ **Database Schema & Dictionary:** [data-dictionary.md](docs/data-dictionary.md)
 * 📊 **Architecture Diagrams (C4 & Sequence):** [diagrams/README.md](docs/diagrams/README.md)
 * 🎨 **Brand Identity Board:** [design/brand/branding-sheet.html](docs/design/brand/branding-sheet.html)
+* 🏠 **Home Dashboard Wireframe:** [design/wireframes/wireframes-home.html](docs/design/wireframes/wireframes-home.html)
 * 🖥️ **Lessons Wireframe:** [design/wireframes/wireframes-lessons.html](docs/design/wireframes/wireframes-lessons.html)
 * 👥 **Students & Billing Wireframe:** [design/wireframes/wireframes-students.html](docs/design/wireframes/wireframes-students.html)

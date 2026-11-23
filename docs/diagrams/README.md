@@ -5,7 +5,7 @@ This directory contains the visual specifications for the **IDIOMAR** (idiom.ar)
 ---
 
 ## 1. Entity-Relationship Diagram (ERD)
-File: [01-erd.mmd](file:///Users/dima/Documents/Programming/IDIOMAR/docs/diagrams/01-erd.mmd)
+File: [01-erd.mmd](./01-erd.mmd)
 
 ```mermaid
 erDiagram
@@ -16,8 +16,16 @@ erDiagram
     STUDENT_PROFILES ||--o{ LESSONS : "attends"
     TUTOR_PROFILES ||--o{ LESSONS : "conducts"
     
-    STUDENT_PROFILES ||--o{ PAYMENTS : "submits"
-    TUTOR_PROFILES ||--o{ PAYMENTS : "verifies"
+    STUDENT_PROFILES ||--o{ CHARGES : "owes"
+    LESSONS ||--o| CHARGES : "creates"
+    STUDENT_PROFILES ||--o{ PAYMENT_REPORTS : "may report"
+    TUTOR_PROFILES ||--o{ PAYMENT_REPORTS : "resolves"
+    STUDENT_PROFILES ||--o{ PAYMENTS : "has confirmed"
+    TUTOR_PROFILES ||--o{ PAYMENTS : "records"
+    PAYMENT_REPORTS o|--o| PAYMENTS : "may be confirmed as"
+    PAYMENTS ||--o{ PAYMENT_ALLOCATIONS : "funds"
+    CHARGES ||--o{ PAYMENT_ALLOCATIONS : "settled by"
+    STUDENT_PROFILES ||--o{ STUDENT_BILLING_ACCOUNTS : "has currency credit"
 
     LESSONS ||--o{ HOMEWORK : "assigns"
     LESSONS ||--o{ VOCABULARY_ITEMS : "introduces"
@@ -40,8 +48,7 @@ erDiagram
         uuid tutor_id FK
         string target_language
         string cefr_level "A1 to C2"
-        decimal hourly_rate "Agreed rate per lesson (supports legacy pricing)"
-        int default_payment_lessons "Default batch count e.g. 8 or 10"
+        decimal hourly_rate "Agreed rate used for new charges"
         string currency "USD, EUR, etc."
         string status "active | archived"
     }
@@ -53,18 +60,55 @@ erDiagram
         string google_calendar_id "defaults to primary"
     }
 
+    CHARGES {
+        uuid id PK
+        uuid lesson_id FK, UK
+        uuid student_id FK
+        decimal amount_due
+        string currency
+        timestamp charged_at
+    }
+
+    PAYMENT_REPORTS {
+        uuid id PK
+        uuid student_id FK
+        decimal reported_amount "nullable"
+        string reported_currency "nullable"
+        string payment_method "nullable"
+        text student_note "nullable"
+        string status "pending | recorded | dismissed"
+        timestamp created_at
+        uuid resolved_by_tutor_id FK "nullable"
+        timestamp resolved_at "nullable"
+        text tutor_note "nullable"
+    }
+
     PAYMENTS {
         uuid id PK
         uuid student_id FK
-        uuid verified_by_tutor_id FK "nullable until verified"
-        decimal amount
+        uuid payment_report_id FK, UK "nullable"
+        uuid verified_by_tutor_id FK
+        decimal verified_amount
         string currency
-        int lessons_credited "e.g. 1, 5, 8, 10"
-        string payment_method "PayPal | Wise | Bank Transfer | Cash"
-        string status "pending_verification | verified | rejected"
-        text student_note "e.g. PayPal transaction reference"
-        timestamp requested_at
+        string payment_method "nullable"
         timestamp verified_at
+        text tutor_note "nullable"
+    }
+
+    PAYMENT_ALLOCATIONS {
+        uuid payment_id PK, FK
+        uuid charge_id PK, FK
+        uuid student_id FK
+        string currency
+        decimal amount_applied
+        timestamp allocated_at
+    }
+
+    STUDENT_BILLING_ACCOUNTS {
+        uuid student_id PK, FK
+        string currency PK
+        decimal unallocated_credit "transactionally maintained summary"
+        timestamp updated_at
     }
 
     LESSONS {
@@ -107,7 +151,7 @@ erDiagram
 ---
 
 ## 2. C4 Level 2: Container Diagram
-File: [02-c4-level2-containers.mmd](file:///Users/dima/Documents/Programming/IDIOMAR/docs/diagrams/02-c4-level2-containers.mmd)
+File: [02-c4-level2-containers.mmd](./02-c4-level2-containers.mmd)
 
 ```mermaid
 flowchart TD
@@ -154,7 +198,7 @@ flowchart TD
 ---
 
 ## 3. C4 Level 3: Component Diagram (Modular Monolith Backend)
-File: [03-c4-level3-components.mmd](file:///Users/dima/Documents/Programming/IDIOMAR/docs/diagrams/03-c4-level3-components.mmd)
+File: [03-c4-level3-components.mmd](./03-c4-level3-components.mmd)
 
 ```mermaid
 flowchart TD
@@ -218,7 +262,7 @@ flowchart TD
 ---
 
 ## 4. UML Sequence Diagram: Lesson Lifecycle (Scheduling & Completion)
-File: [04-sequence-lesson-lifecycle.mmd](file:///Users/dima/Documents/Programming/IDIOMAR/docs/diagrams/04-sequence-lesson-lifecycle.mmd)
+File: [04-sequence-lesson-lifecycle.mmd](./04-sequence-lesson-lifecycle.mmd)
 
 ```mermaid
 sequenceDiagram
@@ -282,8 +326,9 @@ sequenceDiagram
         end
 
         Sched->>Bill: createCharge(lesson, effectiveRate, currency)
-        Bill->>DB: INSERT one immutable charge for the completed billable lesson
+        Bill->>DB: Lock or create student billing account, INSERT one immutable charge
         Bill->>DB: Settle oldest charges FIFO only when same-currency credit covers each charge in full
+        Bill->>DB: Persist allocations and decrement cached credit in the same transaction
         DB-->>Bill: Returns paid or unpaid charge status and remaining unallocated credit
         Sched->>DB: COMMIT transaction
         
@@ -299,7 +344,7 @@ sequenceDiagram
 ---
 
 ## 5. UML Sequence Diagram: Homework Lifecycle
-File: [06-sequence-homework-lifecycle.mmd](file:///Users/dima/Documents/Programming/IDIOMAR/docs/diagrams/06-sequence-homework-lifecycle.mmd)
+File: [05-sequence-homework-lifecycle.mmd](./05-sequence-homework-lifecycle.mmd)
 
 ```mermaid
 sequenceDiagram
@@ -371,9 +416,9 @@ sequenceDiagram
 
 ## 6. UML Sequence Diagram: Lesson Charges & Payment Allocation
 
-This agreed flow replaces the old payment-confirmation sequence. **Completing a billable lesson creates its charge; a payment does not create a charge.** Students may optionally report payment details, but the tutor can record a payment directly by entering the verified amount. Verified credit settles charges FIFO, and only when it can cover a charge in full. Any amount that cannot cover the oldest open charge remains as unallocated student credit. The ERD and data dictionary still describe the legacy lesson-credit model and have not yet been updated.
+This agreed flow replaces the old payment-confirmation sequence. **Completing a billable lesson creates its charge; a payment does not create a charge.** Students may optionally report payment details, but the tutor can record a payment directly by entering the verified amount. Verified credit settles charges FIFO, and only when it can cover a charge in full. Any amount that cannot cover the oldest open charge remains as unallocated student credit. The ERD and data dictionary describe this charge-and-allocation model.
 
-File: [07-sequence-charge-payment-allocation.mmd](./07-sequence-charge-payment-allocation.mmd)
+File: [06-sequence-charge-payment-allocation.mmd](./06-sequence-charge-payment-allocation.mmd)
 
 ```mermaid
 sequenceDiagram
@@ -396,9 +441,10 @@ sequenceDiagram
         DB-->>Sched: Lesson is eligible for completion
         Sched->>DB: UPDATE lesson status = 'completed' and save recap
         Sched->>Bill: createCharge(lesson, effectiveRate, currency)
-        Bill->>DB: INSERT charge (lesson_id, student_id, amount_due, currency)
+        Bill->>DB: Lock or create student billing account, INSERT charge (lesson_id, student_id, amount_due, currency)
         Note over Bill, DB: One immutable charge per completed billable lesson — snapshot the rate and currency
-        Bill->>DB: Lock student billing record, settle oldest charges fully when existing same-currency credit covers each charge
+        Bill->>DB: Settle oldest charges fully when existing same-currency credit covers each charge
+        Bill->>DB: Persist allocations and decrement cached credit in the same transaction
         DB-->>Bill: Return settled charges and remaining unallocated credit
         Bill->>DB: COMMIT transaction
         Sched-->>API: 200 OK (CompletedLessonDTO, charge summary)
@@ -415,7 +461,7 @@ sequenceDiagram
             Student->>UI: Optionally enters amount, currency, method, and note
             UI->>API: POST /api/payments/reports {reportedAmount?, currency?, paymentMethod?, note?}
             API->>Bill: reportPayment(optionalDetails, studentId)
-            Bill->>DB: Save optional report details (status = 'pending_verification')
+            Bill->>DB: Save optional report details (status = 'pending')
             DB-->>Bill: Payment report created
             Bill-)Notif: emit PaymentReportedEvent(paymentReport)
             Notif--)Tutor: Alerts tutor to review the optional payment report
@@ -427,14 +473,15 @@ sequenceDiagram
         Tutor->>UI: Selects a student and opens a report or records a payment directly
         UI->>API: POST /api/students/{studentId}/payments {reportedPaymentId?, verifiedAmount, currency?, paymentMethod?, tutorNote?}
         API->>Bill: recordVerifiedPayment(studentId, tutorId, paymentDetails)
-        Bill->>DB: BEGIN transaction, lock student billing record, payment, and relevant open charges
+        Bill->>DB: BEGIN transaction, lock student billing account, report if selected, and relevant open charges
         alt Existing student report selected
-            Bill->>DB: Mark report verified with verified_amount and tutor
+            Bill->>DB: Create verified payment linked to report, mark report recorded
         else Tutor records payment without a student report
             Bill->>DB: Create verified payment with verified_amount and tutor
         end
-        Bill->>DB: Add verified amount to same-currency unallocated credit
-        Bill->>DB: Settle oldest charges FIFO only when pooled credit covers each charge in full
+        Bill->>DB: Add verified amount to student_billing_accounts.unallocated_credit
+        Bill->>DB: Allocate payment portions FIFO only when pooled credit covers each charge in full
+        Bill->>DB: Subtract allocations from cached credit and persist payment_allocations
         alt Credit covers the oldest open charge
             DB-->>Bill: Settle full charge and continue to the next oldest charge
         else Credit cannot cover the oldest open charge or no open charges remain
@@ -449,14 +496,12 @@ sequenceDiagram
     end
 ```
 
-### Implementation Notes
+### Billing Invariants
 
-1. **Add a `charges` table.** Create one charge for each billable completed lesson, with a unique `lesson_id`, `student_id`, `amount_due`, `currency`, and creation timestamp. Store the final amount and currency at charge creation so later rate changes do not rewrite history.
-2. **Add a `payment_allocations` table.** Link verified payments to charges with `payment_id`, `charge_id`, `amount_applied`, and `allocated_at`. Create allocation rows only when pooled same-currency credit can settle the full charge; the rows may draw from multiple payments, and one payment may settle multiple charges. Each committed allocation set must cover the charge in full, never leave it partially paid.
-3. **Change `payments`.** Keep optional `reported_amount`, `payment_method`, and student note fields separate from the tutor-entered `verified_amount`. Require the verified amount to record a payment, default currency from the student's billing currency where appropriate, and record the tutor and verification time. Remove `lessons_credited`; it no longer describes the ledger. Unallocated credit is verified payment value not yet used to fully settle charges.
-4. **Update lesson completion and payment recording.** In transactions, complete the lesson/create exactly one charge or record a verified payment, then apply same-currency credit FIFO. Make completion idempotent, enforce one charge per lesson, and serialize billing updates per student so concurrent operations cannot reuse the same credit.
-5. **Revise billing queries and UI.** Show completed charges as paid or unpaid, plus the student's unallocated credit. Do not expose a partially paid charge state.
-6. **Plan legacy data migration.** Existing payments record `lessons_credited`, and old lessons lack historical charge amounts. A reliable migration needs a chosen rate-history assumption or manual reconciliation; the current data cannot always reveal which old lessons a payment covered or what each cost.
-7. **Define exceptional billing rules.** Decide how to handle canceled/late-canceled lessons, refunds, payment corrections, and charge corrections. Preserve an audit trail rather than silently editing or deleting financial history.
-
-The existing data dictionary and ERD still describe the legacy credit-count model. Update them to match this agreed charge-and-allocation flow before implementation, including its migration and exceptional-billing rules.
+1. **Charges:** Create at most one immutable charge per completed billable lesson and snapshot its amount and currency.
+2. **Optional reports:** Student-submitted payment details are optional and do not count as credit until the tutor confirms receipt.
+3. **Confirmed payments:** Store only tutor-confirmed receipts in `payments`; `payment_report_id` is optional so a tutor can record a payment directly.
+4. **Mutable credit summary:** Maintain `student_billing_accounts.unallocated_credit` in the same transaction as payment recording and allocation. Payment and allocation rows remain the audit trail and allow the summary to be reconciled.
+5. **Whole-charge FIFO:** Allocate same-currency credit to the oldest charge only when enough credit exists to settle it fully. Stop if credit is insufficient; leave it unallocated and the charge unpaid.
+6. **Concurrency:** Serialize billing changes per student and currency so concurrent lesson completions and payment entries cannot reuse credit.
+7. **Corrections:** Define refund and correction behavior before implementation; preserve financial history rather than silently editing or deleting confirmed records.

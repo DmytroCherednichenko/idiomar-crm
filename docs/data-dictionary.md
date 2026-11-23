@@ -2,8 +2,6 @@
 
 This document provides the complete data dictionary for the relational database schema of **IDIOMAR** (PostgreSQL). It defines table specifications, column data types, integrity constraints, and business domain rules.
 
-> **Model status:** This describes the legacy lesson-credit schema, not the agreed charge-and-allocation payment flow. See the [charge and payment allocation sequence](./diagrams/07-sequence-charge-payment-allocation.mmd); update the payment schema and ledger formula before implementing that flow.
-
 ---
 
 ## 1. Domain Enums & Value Sets
@@ -16,7 +14,7 @@ This document provides the complete data dictionary for the relational database 
 | `cefr_level` | `'A1'`, `'A2'`, `'B1'`, `'B2'`, `'C1'`, `'C2'` | Common European Framework of Reference for Languages |
 | `lesson_status` | `'scheduled'`, `'completed'`, `'canceled'` | Lifecycle status of a booked lesson |
 | `homework_status` | `'pending'`, `'submitted'`, `'reviewed'` | Progression status of an assigned homework |
-| `payment_status` | `'pending_verification'`, `'verified'`, `'rejected'` | Handshake state between student payment and tutor review |
+| `payment_report_status` | `'pending'`, `'recorded'`, `'dismissed'` | State of an optional student-submitted payment report; confirmed payments are stored separately |
 | `mastery_status` | `'new'`, `'learning'`, `'mastered'` | Learning retention level in the Glossary Deck |
 
 ---
@@ -57,7 +55,7 @@ This document provides the complete data dictionary for the relational database 
 ---
 
 ### 2.3 Table: `student_profiles`
-**Description:** Pedagogical and financial profile for each student, establishing their mentorship link to a specific tutor and their legacy pricing.
+**Description:** Pedagogical and financial profile for each student, establishing their mentorship link to a specific tutor and agreed lesson pricing.
 
 | Column Name | Data Type | Nullable | Constraints | Default | Description / Business Rules |
 | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -65,8 +63,7 @@ This document provides the complete data dictionary for the relational database 
 | `tutor_id` | `UUID` | No | `FK -> tutor_profiles(user_id) ON DELETE RESTRICT` | None | The independent tutor mentoring this student |
 | `target_language` | `VARCHAR(50)` | No | None | None | Language the student is learning (e.g. Spanish, German) |
 | `cefr_level` | `VARCHAR(5)` | Yes | `CHECK (cefr_level IN ('A1','A2','B1','B2','C1','C2'))` | `'A1'` | Assessed CEFR proficiency level |
-| `hourly_rate` | `DECIMAL(10,2)` | No | `CHECK (hourly_rate >= 0)` | None | Agreed lesson price for this student (preserves legacy pricing) |
-| `default_payment_lessons` | `INT` | No | `CHECK (default_payment_lessons > 0)` | `8` | Default batch size pre-selected on payment renewal modal |
+| `hourly_rate` | `DECIMAL(10,2)` | No | `CHECK (hourly_rate >= 0)` | None | Agreed hourly rate used to calculate new lesson charges |
 | `currency` | `VARCHAR(3)` | No | ISO 4217 code | `'USD'` | Billing currency agreed with tutor |
 | `learning_goals` | `TEXT` | Yes | None | `NULL` | Student's motivation, target exams, or notes |
 | `status` | `VARCHAR(20)` | No | `CHECK (status IN ('active', 'archived'))` | `'active'` | Lifecycle state; allows archiving past students to declutter UI while preserving past lessons & payments |
@@ -78,7 +75,7 @@ This document provides the complete data dictionary for the relational database 
 
 | Column Name | Data Type | Nullable | Constraints | Default | Description / Business Rules |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `id` | `UUID` | No | `PRIMARY KEY` | `gen_random_uuid()` | Unique lesson identifier |
+| `id` | `UUID` | No | `PRIMARY KEY`, `UNIQUE (id, student_id)` | `gen_random_uuid()` | Unique lesson identifier; composite unique key supports charge ownership integrity |
 | `tutor_id` | `UUID` | No | `FK -> tutor_profiles(user_id) ON DELETE CASCADE` | None | Tutor conducting the session |
 | `student_id` | `UUID` | No | `FK -> student_profiles(user_id) ON DELETE CASCADE` | None | Student attending the session |
 | `start_time` | `TIMESTAMPTZ` | No | None | None | Session start timestamp stored in UTC |
@@ -129,40 +126,118 @@ This document provides the complete data dictionary for the relational database 
 
 ---
 
-### 2.7 Table: `payments`
-**Description:** Verification ledger tracking off-platform payment confirmations and credited lesson quantities.
+### 2.7 Table: `charges`
+**Description:** Immutable charge for one completed billable lesson. The amount and currency are snapshotted when the lesson is completed so later rate changes do not alter billing history.
 
 | Column Name | Data Type | Nullable | Constraints | Default | Description / Business Rules |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `id` | `UUID` | No | `PRIMARY KEY` | `gen_random_uuid()` | Unique payment transaction record |
-| `student_id` | `UUID` | No | `FK -> student_profiles(user_id) ON DELETE CASCADE` | None | Student reporting the payment |
-| `verified_by_tutor_id` | `UUID` | Yes | `FK -> tutor_profiles(user_id) ON DELETE SET NULL` | `NULL` | Tutor who verified and approved the payment |
-| `amount` | `DECIMAL(10,2)` | No | `CHECK (amount > 0)` | None | Total monetary amount transferred |
-| `currency` | `VARCHAR(3)` | No | ISO 4217 code | `'USD'` | Currency of transaction |
-| `lessons_credited` | `INT` | No | `CHECK (lessons_credited > 0)` | `8` | Number of lessons purchased with this transaction |
-| `payment_method` | `VARCHAR(50)` | No | None | `'PayPal'` | Transfer channel (e.g. `'PayPal'`, `'Wise'`, `'Bank Transfer'`, `'Cash'`) |
-| `status` | `VARCHAR(25)` | No | `CHECK (status IN ('pending_verification','verified','rejected'))` | `'pending_verification'` | Handshake verification state |
-| `student_note` | `VARCHAR(255)` | Yes | None | `NULL` | Transaction reference code or note provided by student |
-| `tutor_note` | `VARCHAR(255)` | Yes | None | `NULL` | Rejection reason or internal remark from tutor |
-| `requested_at` | `TIMESTAMPTZ` | No | None | `CURRENT_TIMESTAMP` | When student requested verification |
-| `verified_at` | `TIMESTAMPTZ` | Yes | None | `NULL` | Timestamp when tutor approved or rejected payment |
+| `id` | `UUID` | No | `PRIMARY KEY`, `UNIQUE (id, student_id, currency)` | `gen_random_uuid()` | Unique charge identifier; composite unique key supports allocation integrity |
+| `lesson_id` | `UUID` | No | `UNIQUE`, composite `FK -> lessons(id, student_id) ON DELETE RESTRICT` | None | At most one charge per billable lesson |
+| `student_id` | `UUID` | No | `FK -> student_profiles(user_id) ON DELETE RESTRICT` | None | Student responsible for the charge; composite FK ensures this matches the lesson |
+| `amount_due` | `DECIMAL(10,2)` | No | `CHECK (amount_due > 0)` | None | Final charge amount, snapshotted at completion |
+| `currency` | `VARCHAR(3)` | No | ISO 4217 code | None | Currency of this charge; must match allocations |
+| `charged_at` | `TIMESTAMPTZ` | No | None | `CURRENT_TIMESTAMP` | FIFO order for charges; use `id` as a stable tie-breaker |
+
+Charge payment state is derived from allocations: a charge is paid when allocation amounts sum to `amount_due`; otherwise it is unpaid. Allocation transactions must never commit a partially paid charge.
 
 ---
 
-## 3. Financial Ledger Formula (Lesson Balance)
+### 2.8 Table: `payment_reports`
+**Description:** Optional details a student chooses to submit about an off-platform transfer. A report is not a confirmed payment and never changes credit by itself. A tutor can also record a confirmed payment without any report.
 
-A student's live balance of available lessons is computed dynamically without relying on mutable counters:
+| Column Name | Data Type | Nullable | Constraints | Default | Description / Business Rules |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `id` | `UUID` | No | `PRIMARY KEY`, `UNIQUE (id, student_id)` | `gen_random_uuid()` | Unique report identifier; composite unique key supports payment ownership integrity |
+| `student_id` | `UUID` | No | `FK -> student_profiles(user_id) ON DELETE RESTRICT` | None | Student who submitted the report |
+| `reported_amount` | `DECIMAL(10,2)` | Yes | `CHECK (reported_amount IS NULL OR reported_amount > 0)` | `NULL` | Amount the student says they sent; may be omitted |
+| `reported_currency` | `VARCHAR(3)` | Yes | ISO 4217 code | `NULL` | Reported currency; may be omitted |
+| `payment_method` | `VARCHAR(50)` | Yes | None | `NULL` | Reported transfer channel; may be omitted |
+| `student_note` | `VARCHAR(255)` | Yes | None | `NULL` | Optional reference or note |
+| `status` | `VARCHAR(20)` | No | `CHECK (status IN ('pending','recorded','dismissed'))` | `'pending'` | `recorded` when linked to a confirmed payment; `dismissed` when not accepted |
+| `created_at` | `TIMESTAMPTZ` | No | None | `CURRENT_TIMESTAMP` | When the student submitted the report |
+| `resolved_at` | `TIMESTAMPTZ` | Yes | None | `NULL` | When the tutor recorded or dismissed the report |
+| `resolved_by_tutor_id` | `UUID` | Yes | `FK -> tutor_profiles(user_id) ON DELETE SET NULL` | `NULL` | Tutor who resolved the report |
+| `tutor_note` | `VARCHAR(255)` | Yes | None | `NULL` | Optional internal note when dismissing or resolving the report |
+
+Do not create a report when the student chooses not to submit one. If all report fields are empty, treat the interaction as no report.
+
+---
+
+### 2.9 Table: `payments`
+**Description:** Ledger of funds the tutor has confirmed were received. Every row is verified; student reports are optional and stored separately.
+
+| Column Name | Data Type | Nullable | Constraints | Default | Description / Business Rules |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `id` | `UUID` | No | `PRIMARY KEY`, `UNIQUE (id, student_id, currency)` | `gen_random_uuid()` | Unique confirmed payment identifier; composite unique key supports allocation integrity |
+| `student_id` | `UUID` | No | `FK -> student_profiles(user_id) ON DELETE RESTRICT` | None | Student whose payment was received |
+| `payment_report_id` | `UUID` | Yes | `UNIQUE`, composite `FK -> payment_reports(id, student_id)` | `NULL` | Optional report being verified; null for direct tutor entry |
+| `verified_amount` | `DECIMAL(10,2)` | No | `CHECK (verified_amount > 0)` | None | Amount the tutor confirms was received |
+| `currency` | `VARCHAR(3)` | No | ISO 4217 code | None | Confirmed currency; default from student billing currency in the UI/service |
+| `payment_method` | `VARCHAR(50)` | Yes | None | `NULL` | Confirmed transfer channel, if known |
+| `verified_by_tutor_id` | `UUID` | No | `FK -> tutor_profiles(user_id) ON DELETE RESTRICT` | None | Tutor who recorded and confirmed receipt |
+| `verified_at` | `TIMESTAMPTZ` | No | None | `CURRENT_TIMESTAMP` | When the tutor confirmed receipt |
+| `tutor_note` | `VARCHAR(255)` | Yes | None | `NULL` | Optional note for a directly recorded or verified payment |
+
+Payments are immutable financial facts; corrections should be represented by auditable adjustment records rather than silently changing the verified amount.
+
+---
+
+### 2.10 Table: `payment_allocations`
+**Description:** Records which verified funds settle which lesson charges. The many-to-many relationship allows multiple payments to contribute to one fully paid charge and one payment to settle multiple charges.
+
+| Column Name | Data Type | Nullable | Constraints | Default | Description / Business Rules |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `payment_id` | `UUID` | No | `PK`, `FK -> payments(id) ON DELETE RESTRICT` | None | Confirmed payment providing these funds |
+| `charge_id` | `UUID` | No | `PK`, `FK -> charges(id) ON DELETE RESTRICT` | None | Charge settled by these funds |
+| `student_id` | `UUID` | No | Composite FK with `payment_id` and `charge_id` | None | Ensures payment and charge belong to the same student |
+| `currency` | `VARCHAR(3)` | No | Composite FK with `payment_id` and `charge_id` | None | Ensures payment and charge currencies match |
+| `amount_applied` | `DECIMAL(10,2)` | No | `CHECK (amount_applied > 0)` | None | Portion of this payment applied to this charge |
+| `allocated_at` | `TIMESTAMPTZ` | No | None | `CURRENT_TIMESTAMP` | When the allocation was recorded |
+
+The composite primary key is `(payment_id, charge_id)`. Composite foreign keys to `(payment_id, student_id, currency)` and `(charge_id, student_id, currency)` ensure allocations never cross students or currencies. Create allocations only when pooled credit can fully cover the oldest open charge; in the same transaction, record all contributing payment portions so committed allocations for the charge sum to its full amount.
+
+---
+
+### 2.11 Table: `student_billing_accounts`
+**Description:** Mutable, transactionally maintained summary of a student's unallocated credit for one currency. Payment and allocation rows remain the auditable source of truth; this table provides a fast balance read.
+
+| Column Name | Data Type | Nullable | Constraints | Default | Description / Business Rules |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `student_id` | `UUID` | No | `PK`, `FK -> student_profiles(user_id) ON DELETE CASCADE` | None | Student owning this billing account |
+| `currency` | `VARCHAR(3)` | No | `PK`, ISO 4217 code | None | Credit is kept separately for each currency |
+| `unallocated_credit` | `DECIMAL(10,2)` | No | `CHECK (unallocated_credit >= 0)` | `0` | Verified funds not yet allocated to fully settle charges |
+| `updated_at` | `TIMESTAMPTZ` | No | None | `CURRENT_TIMESTAMP` | Last balance update |
+
+The composite primary key is `(student_id, currency)`. Create an account row when a student first incurs a charge or receives payment in that currency. Update this balance in the same transaction as payment insertion and charge allocations, locking the account row to prevent concurrent updates from spending the same credit twice. Do not combine this value with outstanding charges into one net balance.
+
+---
+
+## 3. Financial Ledger and Cached Credit
+
+`student_billing_accounts.unallocated_credit` is the mutable operational balance, maintained atomically with the immutable payment and allocation records. Reconcile it against those records with:
 
 ```sql
-SELECT 
-    s.user_id AS student_id,
-    COALESCE(SUM(p.lessons_credited), 0) - 
-    COALESCE((SELECT COUNT(*) FROM lessons l WHERE l.student_id = s.user_id AND l.status = 'completed'), 0) 
-    AS available_lesson_balance
-FROM student_profiles s
-LEFT JOIN payments p ON p.student_id = s.user_id AND p.status = 'verified'
-GROUP BY s.user_id;
+WITH payment_totals AS (
+    SELECT student_id, currency, SUM(verified_amount) AS total_verified
+    FROM payments
+    GROUP BY student_id, currency
+),
+allocation_totals AS (
+    SELECT student_id, currency, SUM(amount_applied) AS total_allocated
+    FROM payment_allocations
+    GROUP BY student_id, currency
+)
+SELECT
+    account.student_id,
+    account.currency,
+    account.unallocated_credit AS stored_credit,
+    COALESCE(payment.total_verified, 0) - COALESCE(allocation.total_allocated, 0)
+        AS calculated_credit
+FROM student_billing_accounts account
+LEFT JOIN payment_totals payment
+    ON payment.student_id = account.student_id AND payment.currency = account.currency
+LEFT JOIN allocation_totals allocation
+    ON allocation.student_id = account.student_id AND allocation.currency = account.currency;
 ```
-* **Positive Value (`> 0`):** Number of prepaid classes available for future booking.
-* **Zero (`= 0`):** Up to date; no debt, no prepaid credit.
-* **Negative Value (`< 0`):** Number of completed lessons awaiting student payment.
+
+The stored and calculated values should match. A charge is **paid** when its allocations sum to `amount_due`; otherwise it is **unpaid**. Allocation runs FIFO by `charged_at` (then `id`) and only settles a charge when the available same-currency credit can cover it in full. If credit is insufficient for the oldest open charge, stop and retain all remaining credit as unallocated.

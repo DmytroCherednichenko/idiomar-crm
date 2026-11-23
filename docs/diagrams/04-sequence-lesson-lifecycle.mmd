@@ -67,8 +67,9 @@ sequenceDiagram
 
         %% Step 2B: Charge Creation & Credit Allocation
         Sched->>Bill: createCharge(lesson, effectiveRate, currency)
-        Bill->>DB: INSERT one immutable charge for the completed billable lesson
+        Bill->>DB: Lock or create student billing account, INSERT one immutable charge
         Bill->>DB: Settle oldest charges FIFO only when same-currency credit covers each charge in full
+        Bill->>DB: Persist allocations and decrement cached credit in the same transaction
         DB-->>Bill: Returns paid or unpaid charge status and remaining unallocated credit
         Sched->>DB: COMMIT transaction
         

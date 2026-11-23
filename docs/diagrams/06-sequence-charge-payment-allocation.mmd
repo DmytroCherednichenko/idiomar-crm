@@ -18,9 +18,10 @@ sequenceDiagram
         DB-->>Sched: Lesson is eligible for completion
         Sched->>DB: UPDATE lesson status = 'completed' and save recap
         Sched->>Bill: createCharge(lesson, effectiveRate, currency)
-        Bill->>DB: INSERT charge (lesson_id, student_id, amount_due, currency)
+        Bill->>DB: Lock or create student billing account, INSERT charge (lesson_id, student_id, amount_due, currency)
         Note over Bill, DB: One immutable charge per completed billable lesson — snapshot the rate and currency
-        Bill->>DB: Lock student billing record, settle oldest charges fully when existing same-currency credit covers each charge
+        Bill->>DB: Settle oldest charges fully when existing same-currency credit covers each charge
+        Bill->>DB: Persist allocations and decrement cached credit in the same transaction
         DB-->>Bill: Return settled charges and remaining unallocated credit
         Bill->>DB: COMMIT transaction
         Sched-->>API: 200 OK (CompletedLessonDTO, charge summary)
@@ -37,7 +38,7 @@ sequenceDiagram
             Student->>UI: Optionally enters amount, currency, method, and note
             UI->>API: POST /api/payments/reports {reportedAmount?, currency?, paymentMethod?, note?}
             API->>Bill: reportPayment(optionalDetails, studentId)
-            Bill->>DB: Save optional report details (status = 'pending_verification')
+            Bill->>DB: Save optional report details (status = 'pending')
             DB-->>Bill: Payment report created
             Bill-)Notif: emit PaymentReportedEvent(paymentReport)
             Notif--)Tutor: Alerts tutor to review the optional payment report
@@ -49,14 +50,15 @@ sequenceDiagram
         Tutor->>UI: Selects a student and opens a report or records a payment directly
         UI->>API: POST /api/students/{studentId}/payments {reportedPaymentId?, verifiedAmount, currency?, paymentMethod?, tutorNote?}
         API->>Bill: recordVerifiedPayment(studentId, tutorId, paymentDetails)
-        Bill->>DB: BEGIN transaction, lock student billing record, payment, and relevant open charges
+        Bill->>DB: BEGIN transaction, lock student billing account, report if selected, and relevant open charges
         alt Existing student report selected
-            Bill->>DB: Mark report verified with verified_amount and tutor
+            Bill->>DB: Create verified payment linked to report, mark report recorded
         else Tutor records payment without a student report
             Bill->>DB: Create verified payment with verified_amount and tutor
         end
-        Bill->>DB: Add verified amount to same-currency unallocated credit
-        Bill->>DB: Settle oldest charges FIFO only when pooled credit covers each charge in full
+        Bill->>DB: Add verified amount to student_billing_accounts.unallocated_credit
+        Bill->>DB: Allocate payment portions FIFO only when pooled credit covers each charge in full
+        Bill->>DB: Subtract allocations from cached credit and persist payment_allocations
         alt Credit covers the oldest open charge
             DB-->>Bill: Settle full charge and continue to the next oldest charge
         else Credit cannot cover the oldest open charge or no open charges remain

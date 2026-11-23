@@ -6,8 +6,16 @@ erDiagram
     STUDENT_PROFILES ||--o{ LESSONS : "attends"
     TUTOR_PROFILES ||--o{ LESSONS : "conducts"
     
-    STUDENT_PROFILES ||--o{ PAYMENTS : "submits"
-    TUTOR_PROFILES ||--o{ PAYMENTS : "verifies"
+    STUDENT_PROFILES ||--o{ CHARGES : "owes"
+    LESSONS ||--o| CHARGES : "creates"
+    STUDENT_PROFILES ||--o{ PAYMENT_REPORTS : "may report"
+    TUTOR_PROFILES ||--o{ PAYMENT_REPORTS : "resolves"
+    STUDENT_PROFILES ||--o{ PAYMENTS : "has confirmed"
+    TUTOR_PROFILES ||--o{ PAYMENTS : "records"
+    PAYMENT_REPORTS o|--o| PAYMENTS : "may be confirmed as"
+    PAYMENTS ||--o{ PAYMENT_ALLOCATIONS : "funds"
+    CHARGES ||--o{ PAYMENT_ALLOCATIONS : "settled by"
+    STUDENT_PROFILES ||--o{ STUDENT_BILLING_ACCOUNTS : "has currency credit"
 
     LESSONS ||--o{ HOMEWORK : "assigns"
     LESSONS ||--o{ VOCABULARY_ITEMS : "introduces"
@@ -30,8 +38,7 @@ erDiagram
         uuid tutor_id FK
         string target_language
         string cefr_level "A1 to C2"
-        decimal hourly_rate "Agreed rate per lesson (supports legacy pricing)"
-        int default_payment_lessons "Default batch count e.g. 8 or 10"
+        decimal hourly_rate "Agreed rate used for new charges"
         string currency "USD, EUR, etc."
         string status "active | archived"
     }
@@ -43,18 +50,55 @@ erDiagram
         string google_calendar_id "defaults to primary"
     }
 
+    CHARGES {
+        uuid id PK
+        uuid lesson_id FK, UK
+        uuid student_id FK
+        decimal amount_due
+        string currency
+        timestamp charged_at
+    }
+
+    PAYMENT_REPORTS {
+        uuid id PK
+        uuid student_id FK
+        decimal reported_amount "nullable"
+        string reported_currency "nullable"
+        string payment_method "nullable"
+        text student_note "nullable"
+        string status "pending | recorded | dismissed"
+        timestamp created_at
+        uuid resolved_by_tutor_id FK "nullable"
+        timestamp resolved_at "nullable"
+        text tutor_note "nullable"
+    }
+
     PAYMENTS {
         uuid id PK
         uuid student_id FK
-        uuid verified_by_tutor_id FK "nullable until verified"
-        decimal amount
+        uuid payment_report_id FK, UK "nullable"
+        uuid verified_by_tutor_id FK
+        decimal verified_amount
         string currency
-        int lessons_credited "e.g. 1, 5, 8, 10"
-        string payment_method "PayPal | Wise | Bank Transfer | Cash"
-        string status "pending_verification | verified | rejected"
-        text student_note "e.g. PayPal transaction reference"
-        timestamp requested_at
+        string payment_method "nullable"
         timestamp verified_at
+        text tutor_note "nullable"
+    }
+
+    PAYMENT_ALLOCATIONS {
+        uuid payment_id PK, FK
+        uuid charge_id PK, FK
+        uuid student_id FK
+        string currency
+        decimal amount_applied
+        timestamp allocated_at
+    }
+
+    STUDENT_BILLING_ACCOUNTS {
+        uuid student_id PK, FK
+        string currency PK
+        decimal unallocated_credit "transactionally maintained summary"
+        timestamp updated_at
     }
 
     LESSONS {
