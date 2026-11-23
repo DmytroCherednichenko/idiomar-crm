@@ -30,7 +30,7 @@ flowchart TD
 
     %% User Interactions
     Tutor -->|"Views dashboard, schedules classes, confirms payments, and logs vocabulary via HTTPS"| WebApp
-    Student -->|"Views schedule, reviews glossary deck, and requests payment confirmations via HTTPS"| WebApp
+    Student -->|"Views schedule and glossary deck; may optionally report a payment via HTTPS"| WebApp
 
     %% Frontend to Backend
     WebApp -->|"Makes API requests\n[HTTPS / JSON / REST]"| ApiServer

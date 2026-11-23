@@ -2,6 +2,8 @@
 
 This document provides the complete data dictionary for the relational database schema of **IDIOMAR** (PostgreSQL). It defines table specifications, column data types, integrity constraints, and business domain rules.
 
+> **Model status:** This describes the legacy lesson-credit schema, not the agreed charge-and-allocation payment flow. See the [charge and payment allocation sequence](./diagrams/07-sequence-charge-payment-allocation.mmd); update the payment schema and ledger formula before implementing that flow.
+
 ---
 
 ## 1. Domain Enums & Value Sets

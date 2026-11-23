@@ -48,6 +48,7 @@ sequenceDiagram
         UI->>API: POST /api/lessons/{id}/complete {summary, vocab_items, homework}
         API->>Sched: completeLesson(id, completionData)
         
+        Sched->>DB: BEGIN transaction, lock lesson, confirm it is scheduled
         Sched->>DB: UPDATE lessons SET status = 'completed', summary = ... WHERE id = ...
         DB-->>Sched: Lesson updated
         
@@ -64,11 +65,12 @@ sequenceDiagram
             DB-->>Ped: Homework record persisted
         end
 
-        %% Step 2B: Balance Reconciliation
-        Sched->>Bill: emit LessonCompletedEvent(student_id, lesson_id)
-        Bill->>DB: Query verified payments vs completed lessons count
-        DB-->>Bill: Returns balance data
-        Note over Bill: Recalculates student's available prepaid lessons
+        %% Step 2B: Charge Creation & Credit Allocation
+        Sched->>Bill: createCharge(lesson, effectiveRate, currency)
+        Bill->>DB: INSERT one immutable charge for the completed billable lesson
+        Bill->>DB: Settle oldest charges FIFO only when same-currency credit covers each charge in full
+        DB-->>Bill: Returns paid or unpaid charge status and remaining unallocated credit
+        Sched->>DB: COMMIT transaction
         
         %% Step 2C: Notifications
         Sched-)Notif: emit LessonSummaryReadyEvent(student_id, lesson_id)

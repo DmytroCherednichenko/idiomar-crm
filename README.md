@@ -21,9 +21,8 @@ idiomar-crm/
 │   │   ├── 02-c4-level2-containers.mmd # C4 Level 2 Container Diagram
 │   │   ├── 03-c4-level3-components.mmd # C4 Level 3 Component Diagram
 │   │   ├── 04-sequence-lesson-lifecycle.mmd     # Scheduling & completion flow
-│   │   ├── 05-sequence-payment-confirmation.mmd # Handshake payment verification flow
 │   │   ├── 06-sequence-homework-lifecycle.mmd   # Homework assign & feedback flow
-│   │   └── 07-sequence-charge-payment-allocation.mmd # Proposed charge & payment allocation flow
+│   │   └── 07-sequence-charge-payment-allocation.mmd # Lesson charges & optional payment reporting
 │   │
 │   └── design/
 │       ├── brand/                    # Visual brand identity system

@@ -14,14 +14,14 @@ sequenceDiagram
         Tutor->>UI: Marks lesson complete and submits recap
         UI->>API: POST /api/lessons/{id}/complete {summary, vocab_items, homework}
         API->>Sched: completeLesson(id, completionData)
-        Sched->>DB: BEGIN transaction; lock lesson; confirm it is scheduled
+        Sched->>DB: BEGIN transaction, lock lesson, confirm it is scheduled
         DB-->>Sched: Lesson is eligible for completion
         Sched->>DB: UPDATE lesson status = 'completed' and save recap
         Sched->>Bill: createCharge(lesson, effectiveRate, currency)
         Bill->>DB: INSERT charge (lesson_id, student_id, amount_due, currency)
-        Note over Bill, DB: One immutable charge per completed billable lesson; snapshot the rate and currency
-        Bill->>DB: Lock student billing record; allocate existing verified, unallocated funds in same currency to oldest open charges
-        DB-->>Bill: Return charge amount paid and remaining amount
+        Note over Bill, DB: One immutable charge per completed billable lesson — snapshot the rate and currency
+        Bill->>DB: Lock student billing record, settle oldest charges fully when existing same-currency credit covers each charge
+        DB-->>Bill: Return settled charges and remaining unallocated credit
         Bill->>DB: COMMIT transaction
         Sched-->>API: 200 OK (CompletedLessonDTO, charge summary)
         API-->>UI: 200 OK (JSON)
@@ -31,37 +31,41 @@ sequenceDiagram
     end
 
     rect rgb(240, 248, 255)
-        note over Student, Tutor: PHASE 2: Report, Verify, and Allocate a Payment
+        note over Student, Tutor: PHASE 2: Optional Student Report and Tutor-Recorded Payment
         Note over Student: Student sends money off-platform (e.g. PayPal, Wise, Bank)
-        Student->>UI: Reports payment amount, currency, method, and optional note
-        UI->>API: POST /api/payments/request {reportedAmount, currency, payment_method, student_note}
-        API->>Bill: requestPayment(dto, studentId)
-        Bill->>DB: INSERT payment (status = 'pending_verification')
-        DB-->>Bill: Payment record created
-        Bill-)Notif: emit PaymentRequestedEvent(paymentDetails)
-        Notif--)Tutor: Alerts tutor to verify the payment
-        Bill-->>API: 201 Created (PaymentDTO)
-        API-->>UI: 201 Created (JSON)
-        UI-->>Student: Displays pending-verification state
+        opt Student chooses to report payment details
+            Student->>UI: Optionally enters amount, currency, method, and note
+            UI->>API: POST /api/payments/reports {reportedAmount?, currency?, paymentMethod?, note?}
+            API->>Bill: reportPayment(optionalDetails, studentId)
+            Bill->>DB: Save optional report details (status = 'pending_verification')
+            DB-->>Bill: Payment report created
+            Bill-)Notif: emit PaymentReportedEvent(paymentReport)
+            Notif--)Tutor: Alerts tutor to review the optional payment report
+            Bill-->>API: 201 Created (PaymentReportDTO)
+            API-->>UI: 201 Created (JSON)
+            UI-->>Student: Displays report status
+        end
 
-        Tutor->>UI: Verifies the funds actually received
-        UI->>API: PATCH /api/payments/{id}/verify {verifiedAmount}
-        API->>Bill: verifyPayment(id, tutorId, verifiedAmount)
-        Bill->>DB: BEGIN transaction; lock student billing record, payment, and relevant open charges
-        Bill->>DB: Mark payment verified with verified_amount and verifier
-        Bill->>DB: Allocate verified amount to oldest open charges in the same currency
-        Note over Bill, DB: A payment may settle multiple charges; a charge may be settled by multiple payments
-        alt Payment covers a charge in full
-            DB-->>Bill: Charge becomes paid; continue to next oldest open charge
-        else Payment partially covers a charge
-            DB-->>Bill: Charge remains partially paid with an outstanding amount
-        else Verified payment exceeds current open charges
-            DB-->>Bill: Remaining amount stays as unallocated student credit
+        Tutor->>UI: Selects a student and opens a report or records a payment directly
+        UI->>API: POST /api/students/{studentId}/payments {reportedPaymentId?, verifiedAmount, currency?, paymentMethod?, tutorNote?}
+        API->>Bill: recordVerifiedPayment(studentId, tutorId, paymentDetails)
+        Bill->>DB: BEGIN transaction, lock student billing record, payment, and relevant open charges
+        alt Existing student report selected
+            Bill->>DB: Mark report verified with verified_amount and tutor
+        else Tutor records payment without a student report
+            Bill->>DB: Create verified payment with verified_amount and tutor
+        end
+        Bill->>DB: Add verified amount to same-currency unallocated credit
+        Bill->>DB: Settle oldest charges FIFO only when pooled credit covers each charge in full
+        alt Credit covers the oldest open charge
+            DB-->>Bill: Settle full charge and continue to the next oldest charge
+        else Credit cannot cover the oldest open charge or no open charges remain
+            DB-->>Bill: Retain remaining amount as unallocated student credit and leave any open charge unpaid
         end
         Bill->>DB: COMMIT transaction
-        Bill-)Notif: emit PaymentVerifiedEvent(paymentId, allocations, remainingCredit)
-        Notif--)Student: Sends receipt, allocations, and any remaining credit
-        Bill-->>API: 200 OK (VerifiedPaymentDTO)
+        Bill-)Notif: emit PaymentRecordedEvent(paymentId, settledCharges, remainingCredit)
+        Notif--)Student: Sends receipt, settled charges, and any remaining credit
+        Bill-->>API: 200 OK (RecordedPaymentDTO)
         API-->>UI: 200 OK (JSON)
-        UI-->>Tutor: Shows updated charge balances and payment history
+        UI-->>Tutor: Shows paid or unpaid charges, credit, and payment history
     end
